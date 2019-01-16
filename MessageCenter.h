@@ -1,0 +1,14 @@
+//
+// Created by Shinan on 2019/1/9.
+//
+
+#ifndef SEVICEFRAMEWORK_MESSAGECENTER_H
+#define SEVICEFRAMEWORK_MESSAGECENTER_H
+
+
+class MessageCenter {
+
+};
+
+
+#endif //SEVICEFRAMEWORK_MESSAGECENTER_H
