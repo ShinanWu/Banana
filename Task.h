@@ -6,8 +6,14 @@
 #define SEVICEFRAMEWORK_TASK_H
 
 class Task {
+    
 public:
+    Task(const string name);
     virtual void run()=0;
+
+private:
+    bool setThreadName(const string name);
+    Task();
 };
 
 #endif //SEVICEFRAMEWORK_TASK_H
