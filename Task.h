@@ -5,6 +5,11 @@
 #ifndef SEVICEFRAMEWORK_TASK_H
 #define SEVICEFRAMEWORK_TASK_H
 
+#include <iostream>
+
+
+using namespace std;
+
 class Task {
     
 public:

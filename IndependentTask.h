@@ -1,3 +1,6 @@
 #include "glog.h"
+#include "Task.h"
 
-class IndependentTask : publi
+class IndependentTask : public Task{
+
+};

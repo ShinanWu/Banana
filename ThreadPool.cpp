@@ -4,6 +4,8 @@
 
 #include "ThreadPool.h"
 #include <sstream>
+#include <logging.h>
+#include <assert.h>
 
 ThreadPool::ThreadPool(int threadNum, int taskNum)
     :threadNum_(threadNum)
@@ -44,6 +46,6 @@ Task *ThreadPool::__syncGetOneTask() {
 void ThreadPool::threadEntry() {
     std::stringstream ss;
     ss << std::this_thread::get_id();
-    printf("threadId:%s has started\n", ss.str().c_str());
+    LOG(INFO) << "threadId:" << ss.str() << " has started";
 }
 

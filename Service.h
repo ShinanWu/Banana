@@ -5,9 +5,12 @@
 #ifndef SEVICEFRAMEWORK_SERVICE_H
 #define SEVICEFRAMEWORK_SERVICE_H
 
+#include "Task.h"
+#include <logging.h>
 
-class Service {
-
+class Service : Task{
+private:
+    bool setThreadName(const string name);
 };
 
 
