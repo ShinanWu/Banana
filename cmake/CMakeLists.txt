@@ -4,8 +4,9 @@ add_definitions(-g -lpthread -std=c++11)
 
 #set(CMAKE_CXX_STANDARD 11)
 aux_source_directory(.. SRC)
+include_directories(..)
 include_directories(../../glog/src/glog)
 link_directories(../../glog/.libs/)
 link_libraries(libglog.a -ldl -lpthread)
 
-add_executable(SeviceFramework ${SRC})
+add_executable(SeviceFramework ${SRC} ../Task.h ../InteractiveTask.cpp ../IndependentTask.cpp ../ConcurrentHashMap.h)

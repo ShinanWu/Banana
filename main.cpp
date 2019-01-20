@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <signal.h>
 
-int initLog()
+int initLogging()
 {
     google::InitGoogleLogging("ServiceFramework.log"); //初始化glog库
     FLAGS_stderrthreshold = google::INFO;     //
@@ -17,8 +17,8 @@ int initLog()
 
 int main()
 {
-    signal(SIGPIPE, SIG_IGN);
-    initLog();
+    signal(SIGPIPE, SIG_IGN);//忽略pipe破裂信号
+    initLogging();
     ThreadPool *threadPool = new ThreadPool(1000);
     threadPool->start();
     std::this_thread::sleep_for(std::chrono::seconds(10000));

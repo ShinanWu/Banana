@@ -13,12 +13,10 @@ using namespace std;
 class Task {
     
 public:
-    Task(const string name);
-    virtual void run()=0;
+    virtual void start();
+    virtual void run();
+    virtual void onMessage();
 
-private:
-    bool setThreadName(const string name);
-    Task();
 };
 
 #endif //SEVICEFRAMEWORK_TASK_H

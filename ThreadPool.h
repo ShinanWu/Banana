@@ -9,6 +9,7 @@
 #include <mutex>
 #include <queue>
 #include <vector>
+#include <memory>
 #include "Task.h"
 #include "ConcurrentRingBuffer.h"
 
@@ -19,17 +20,17 @@ class ThreadPool {
 private:
     int threadNum_;
     std::vector<std::thread> vecThreads;
-    ConcurrentRingBuffer<Task*> taskQueue_;
+    ConcurrentRingBuffer<std::shared_ptr<Task>> taskQueue_;
 
 public:
     explicit ThreadPool(int threadNum, int taskNum=TASK_QUEUE_MAX_SIZE);
     ~ThreadPool();
-    void syncPostTask(Task* task);
-    bool asyncPostTask(Task* task);
+    void syncPostTask(const std::shared_ptr<Task> &task);
+    bool asyncPostTask(const std::shared_ptr<Task> &task);
     void start();
 private:
     ThreadPool();
-    Task* __syncGetOneTask();
+    bool __syncGetOneTask(std::shared_ptr<Task> &task);
     void threadEntry();
 };
 

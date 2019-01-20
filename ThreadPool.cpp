@@ -28,19 +28,20 @@ void ThreadPool::start() {
     std::cout << vecThreads.size() << " threads has started" << std::endl;
 }
 
-void ThreadPool::syncPostTask(Task* pTask) {
-    assert(pTask != nullptr);
-    taskQueue_.syncPut(pTask);
+void ThreadPool::syncPostTask(const std::shared_ptr<Task> &task) {
+   // assert(pTask != nullptr);
+    taskQueue_.syncPut(task);
 }
 
-bool ThreadPool::asyncPostTask(Task* pTask) {
-    assert(pTask != nullptr);
-    return taskQueue_.asyncPut(pTask);
+bool ThreadPool::asyncPostTask(const std::shared_ptr<Task> &task) {
+    //assert(pTask != nullptr);
+    return taskQueue_.asyncPut(task);
 }
-Task *ThreadPool::__syncGetOneTask() {
-    Task *pTask = nullptr;
-    taskQueue_.syncGet(pTask);
-    return pTask;
+
+bool ThreadPool::__syncGetOneTask(std::shared_ptr<Task> &task) {
+  //  Task *pTask = nullptr;
+    taskQueue_.syncGet(task);
+    return true;
 }
 
 void ThreadPool::threadEntry() {
