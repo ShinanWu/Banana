@@ -28,5 +28,6 @@ bool InteractiveTask::_setThreadName(const string &name) {
 
 void InteractiveTask::start() {
     _setThreadName(taskName_);
+    if(!init()) return;
 }
 
