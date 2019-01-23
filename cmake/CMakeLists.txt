@@ -9,4 +9,4 @@ include_directories(../../glog/src/glog)
 link_directories(../../glog/.libs/)
 link_libraries(libglog.a -ldl -lpthread)
 
-add_executable(SeviceFramework ${SRC} ../Task.h ../InteractiveTask.cpp ../IndependentTask.cpp ../ConcurrentHashMap.h ../examples/NetService.cpp ../examples/NetService.h)
+add_executable(SeviceFramework ${SRC} ../Task.h ../InteractiveTask.cpp ../IndependentTask.cpp ../ConcurrentHashMap.h ../examples/NetService.cpp ../examples/NetService.h ../examples/LibeventObj.cpp ../examples/LibeventObj.h ../examples/Client.cpp ../examples/Client.h)

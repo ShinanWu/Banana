@@ -29,9 +29,9 @@ public:
 
     const string &getTaskName_() const;
     void setTaskName_(const string &taskName_);
-    //virtual bool createReactor(); //自行选择select、poll和epoll，如果只实现onTaskMessage则阻塞read(fd)即可。
+    virtual bool createReactor(); //自行选择select、poll和epoll，如果只实现onTaskMessage则阻塞read(fd)即可。
     //int createEventFd(); //创建eventFd
-    //virtual bool addEvent(int eventFd, int event, EventCallback eventCallback);//添加事件和回调函数
+    virtual bool addEvent(int eventFd, int event, EventCallback eventCallback, );//添加事件和回调函数
     //bool waitEvent();
 
 private:

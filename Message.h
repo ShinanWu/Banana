@@ -9,6 +9,7 @@
 using namespace std;
 
 class Message {
+#define HEADER_LEN 4 //表明随后payload字节数
 public:
     Message();
     ~Message();
@@ -29,12 +30,16 @@ public:
 
     void setId_(int id_);
 
+    const string &getData() const;
+
+    void setData(const string &data);
 
 private:
     bool   RetMsg_;
     string from_;
     string to_;
     int    id_;
+    string data;
 
 };
 

@@ -35,3 +35,11 @@ int Message::getId_() const {
 void Message::setId_(int id_) {
     Message::id_ = id_;
 }
+
+const string &Message::getData() const {
+    return data;
+}
+
+void Message::setData(const string &data) {
+    Message::data = data;
+}
