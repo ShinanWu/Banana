@@ -1,18 +1,18 @@
 //
 // Created by Shinan on 2019/1/23.
 //
-//每一个连接的客户端生成一个client对象
+//每一个连接的客户端生成一个client对象,封装了接收和发送消息
+//非线程安全
 
 #include <unistd.h>
-#include "Client.h"
+#include "Stream.h"
 #include "Message.h"
 #include <errno.h>
 #include <logging.h>
 #include <string.h>
 
-Client::Client(int clientFd, const string &id)
-    : fd_(clientFd),
-      id_(id),
+Stream::Stream(int fd)
+    : fd_(fd),
       recvLen_(0),
       needRecvLen_(HEADER_LEN),
       sendLen_(0),
@@ -24,10 +24,10 @@ Client::Client(int clientFd, const string &id)
 
 }
 
-bool Client::recvOnePck()
+bool Stream::recvOnePck()
 {
   if (getRecvStat_() == RECVED)
-    return false;
+    return true;
 
   int recvLen = read(fd_, &recvBuf_[recvLen_], needRecvLen_);
   if (recvLen == 0)//对端关闭连接
@@ -72,7 +72,7 @@ bool Client::recvOnePck()
   }
 }
 
-bool Client::getPck(vector<char> &recvPck)
+bool Stream::getPck(vector<char> &recvPck)
 {
   if (getRecvStat_() == RECVED)
   {
@@ -84,8 +84,12 @@ bool Client::getPck(vector<char> &recvPck)
   return false;
 }
 
-bool Client::sendPck()
+bool Stream::sendPck()
 {
+  if(getSendStat_() == SENDED)
+  {
+    return true;
+  }
   if (getSendStat_() == SENDING)
   {
     int sendLen = write(fd_, &sendBuf_[sendLen_], sendBuf_.size() - sendLen_);
@@ -118,7 +122,7 @@ bool Client::sendPck()
   return false;
 }
 
-bool Client::setPck(const vector<char> &sendPck)
+bool Stream::setPck(const vector<char> &sendPck)
 {
   if (getSendStat_() == SENDED)
   {
@@ -132,32 +136,32 @@ bool Client::setPck(const vector<char> &sendPck)
   return false;
 }
 
-int Client::getFd_() const
+int Stream::getFd_() const
 {
   return fd_;
 }
 
-void Client::setFd_(int fd_)
+void Stream::setFd_(int fd_)
 {
-  Client::fd_ = fd_;
+  Stream::fd_ = fd_;
 }
 
-int Client::getRecvStat_() const
+int Stream::getRecvStat_() const
 {
   return recvStat_;
 }
 
-void Client::setRecvStat_(int stat_)
+void Stream::setRecvStat_(int stat_)
 {
-  Client::recvStat_ = stat_;
+  Stream::recvStat_ = stat_;
 }
-int Client::getSendStat_() const
+int Stream::getSendStat_() const
 {
   return sendStat_;
 }
-void Client::setSendStat_(int sendStat_)
+void Stream::setSendStat_(int sendStat_)
 {
-  Client::sendStat_ = sendStat_;
+  Stream::sendStat_ = sendStat_;
 }
 
 

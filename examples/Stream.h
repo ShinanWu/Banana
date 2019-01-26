@@ -11,18 +11,18 @@
 
 using namespace std;
 
-class Client
+class Stream
 {
 #define DEFAULT_BUFF_LEN (1024) //1k
 #define RECV_BUFF_MAX_SIZE (1024 * 1024 * 500) //500M
 #define SEND_BUFF_MAX_SIZE (1024 * 1024 * 100) //100M 均需根据实际业务作调整，比如即时通信客户端多，buffer小，取较小合适值即可
   enum
   {
-    RECVING, RECVHEAD, RECVBODY, RECVED, SENDING, SENDED, TOCLOSE
+    RECVING, RECVHEAD, RECVBODY, RECVED, SENDING, SENDED, TOCLOSE //client状态
   };
  public:
-  Client(int clientFd, const string &id);
-  ~Client();
+  Stream(int fd);
+  ~Stream();
   bool recvOnePck();
   bool getPck(vector<char> &recvPck);
   bool sendPck();
@@ -36,15 +36,14 @@ class Client
 
  private:
   int fd_;
-  string id_;
   int recvLen_;
   int needRecvLen_;
   int sendLen_;
   int needSendLen_;
   int recvStat_;
   int sendStat_;
-  vector<char> recvBuf_;
-  vector<char> sendBuf_;
+  vector<char> recvBuf_; //接收信息的buffer
+  vector<char> sendBuf_; //发送的buffer
 };
 
 #endif //SEVICEFRAMEWORK_CLIENT_H

@@ -14,4 +14,5 @@
 
 
 改进：
-1. 每个线程一个eventfd，作为threadLocal变量。不用每个task去生成一次。
+1. 每个线程一个eventfd，作为thread-local变量。不用每个task去生成一次。
+2. 边沿触发，读尽可能多的数据，区分于先读头再读body的形式。

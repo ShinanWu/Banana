@@ -1,7 +1,7 @@
 //
 // Created by Shinan on 2019/1/22.
 //创建一个libevent集成的网络服务
-//功能是网络通信并生成IndependentTask和InactiveTask，并和InactiveTask通信
+//功能是网络通信并生成IndependentTask和InteractiveTask，并和InteractiveTask通信
 #include <sys/stat.h>
 #include <sys/socket.h>
 #include <fcntl.h>
@@ -17,11 +17,7 @@ NetService::NetService(const string &name) : InteractiveTask(name) {}
 bool NetService::init() {
     struct event_base* base;
     base = event_base_new();
-    struct sockaddr_in sin;
-    memset(&sin, 0, sizeof(sin));
-    sin.sin_family = AF_INET;
-    sin.sin_addr.s_addr = htonl(0);//���е�ַ
-    sin.sin_port = htons(port);
+
     m_listener = evconnlistener_new_bind(base, acceptHandler, (void*)m_gbfTh, LEV_OPT_CLOSE_ON_FREE | LEV_OPT_REUSEABLE,
                                          MAX_LIBEVENT_BACKLOG_COUNT, (struct sockaddr*)&sin, sizeof(sin));
 
