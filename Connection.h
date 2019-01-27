@@ -13,8 +13,8 @@ class Connection
  public:
   Connection(int fd);
   ~Connection();
-  static void onRead();
-  static void onWrite();
+  void onRead();
+  void onWrite();
  private:
   struct event *pEvent_;
   Stream stream_;

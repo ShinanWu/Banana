@@ -7,26 +7,30 @@
 #include <functional>
 #include "Connection.h"
 #include "Task.h"
+#include <functional>
 
 using namespace std;
 
 //事件发生器基类
 class EventReactor
 {
-  enum _Event{
+public:
+  enum _EVENT
+  {
+    EVENT_ACCEPT, //accept事件
     EVENT_WRITE,
     EVENT_READ,
-    EVENT_MESSAGE
+    EVENT_MESSAGE, //内部消息事件
+    EVENT_TIMEOUT
   };
- public:
-  typedef function<void(int eventFd, short event)> EventCallback;
- public:
-  virtual bool creatReactor();
+  typedef std::function<void(int fd, short event)> EventCallback;
+public:
+  virtual bool createReactor();
   virtual void destroyReactor();
   virtual bool bindPort(unsigned short port);
-  virtual void onAccept(int fd);
-  virtual bool addEventHandler(Task* handler);
-  virtual bool addEventHandler(short event, Connection* handler); // virtual bool removeEventHandler(EventCallback cb);
+  virtual bool addEventHandler(int fd, short event, const EventCallback& cb);
+  virtual bool removeEventHandler(int fd, short event, const EventCallback& cb);
+  virtual bool freeEvenrHandler(int fd, short event, const EventCallback& cb)
   virtual void startEventLoop();
 };
 

@@ -18,31 +18,35 @@
 
 using namespace std;
 
-class LibeventRector : public EventReactor{
+class LibeventRector : public EventReactor
+{
+
 public:
-    LibeventRector();
-    ~LibeventRector();
- public:
-  virtual bool creatReactor();
+  LibeventRector();
+  ~LibeventRector();
+public:
+  virtual bool createReactor();
   virtual void destroyReactor();
   virtual bool bindPort(unsigned short port);
-  virtual void onAccept(int fd);
-  virtual bool addEventHandler(Task* handler);
-  virtual bool addEventHandler(short event, Connection* handler);
- // virtual bool removeEventHandler(EventCallback cb);
+  virtual bool addEventHandler(int fd, short event, const EventCallback &cb);
+  virtual bool removeEventHandler(int fd, short event, const EventCallback &cb);
+  virtual bool freeEvenrHandler(int fd, short event, const EventCallback &cb)
   virtual void startEventLoop();
 
- private:
+private:
   struct event_base *base_;
   struct evconnlistener *listener_;
-  unsigned short port_;
- private:
-  static void onAccept(struct evconnlistener *listener, evutil_socket_t fd, struct sockaddr *addr, int len, void *pData);
-  static void onRead(evutil_socket_t fd, short events, void *pData);
-  static void onWrite(evutil_socket_t fd, short events, void *pData);
-  static void onMessage(evutil_socket_t fd, short events, void *pData);
+  struct sockaddr_in sin_;
+private:
+  static void onAccept(struct evconnlistener *listener,
+                       evutil_socket_t fd,
+                       struct sockaddr *addr,
+                       int len,
+                       void *pCallback);
+  static void onRead(evutil_socket_t fd, short events, void *pCallback);
+  static void onWrite(evutil_socket_t fd, short events, void *pCallback);
+  static void onMessage(evutil_socket_t fd, short events, void *pCallback);
 
 };
-
 
 #endif //SEVICEFRAMEWORK_LIBEVENTOBJ_H

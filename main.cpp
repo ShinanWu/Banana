@@ -8,20 +8,24 @@
 
 int initLogging()
 {
-    google::InitGoogleLogging("ServiceFramework.log"); //初始化glog库
-    FLAGS_stderrthreshold = google::INFO;     //
-    mkdir("log", 0755);
-    FLAGS_log_dir = "./log";
-    FLAGS_max_log_size = 4;
+  google::InitGoogleLogging("ServiceFramework.log"); //初始化glog库
+  FLAGS_stderrthreshold = google::INFO;     //
+  mkdir("log", 0755);
+  FLAGS_log_dir = "./log";
+  FLAGS_max_log_size = 4;
 }
 
 int main()
 {
-    signal(SIGPIPE, SIG_IGN);//忽略pipe破裂信号
-    initLogging();
-    ThreadPool *threadPool = new ThreadPool(1000);
-    threadPool->start();
-    std::this_thread::sleep_for(std::chrono::seconds(10000));
-    google::ShutdownGoogleLogging();
-    return 0;
+  signal(SIGPIPE, SIG_IGN);//忽略pipe破裂信号
+  initLogging();
+  ThreadPool *threadPool = new ThreadPool(1000);
+  threadPool->start();
+  std::this_thread::sleep_for(std::chrono::seconds(10000));
+  google::ShutdownGoogleLogging();
+  return 0;
 }
+
+
+ Created by Shinan on 2019/1/27.
+
