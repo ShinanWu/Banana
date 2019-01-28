@@ -17,15 +17,15 @@ class EventReactor
 public:
   enum _EVENT
   {
-    EVENT_ACCEPT, //accept事件
-    EVENT_WRITE,
-    EVENT_READ,
-    EVENT_MESSAGE, //内部消息事件
-    EVENT_TIMEOUT
+    EVENT_ACCEPT = 1 << 0, //accept事件
+    EVENT_WRITE = 1 << 1,
+    EVENT_READ = 1 << 2,
+    EVENT_MESSAGE = 1 << 3, //内部消息事件
+    EVENT_TIMEOUT = 1 << 4
   };
   typedef std::function<void(int fd, short event)> EventCallback;
 public:
-  virtual bool createReactor();
+  virtual bool createReactor(int maxFds);
   virtual void destroyReactor();
   virtual bool bindPort(unsigned short port);
   virtual bool addEventHandler(int fd, short event, const EventCallback& cb);

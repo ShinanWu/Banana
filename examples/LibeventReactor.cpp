@@ -19,12 +19,17 @@ LibeventRector::~LibeventRector()
   destroyReactor();
 }
 
-bool LibeventRector::createReactor()
+bool LibeventRector::createReactor(int maxFds)
 {
-  base_ = event_base_new();
-  if (base_ == nullptr)
+  pBase_ = event_base_new();
+  if (pBase_ == nullptr)
   {
     LOG(ERROR) << "create event base failed!";
+    return false;
+  }
+  eventBundleMap_ = new EventBundle[maxFds]();
+  if(eventBundleMap_ == nullptr)
+  {
     return false;
   }
   return true;
@@ -32,15 +37,19 @@ bool LibeventRector::createReactor()
 
 void LibeventRector::destroyReactor()
 {
-  if (base_)
+  if (pBase_)
   {
-    event_base_free(base_);
-    base_ = nullptr;
+    event_base_free(pBase_);
+    pBase_ = nullptr;
   }
-  if (listener_)
+  if (pListener_)
   {
-    evconnlistener_free(listener_);
-    listener_ = nullptr;
+    evconnlistener_free(pListener_);
+    pListener_ = nullptr;
+  }
+  if(eventBundleMap_)
+  {
+    delete[] eventBundleMap_;
   }
 }
 
@@ -55,7 +64,7 @@ bool LibeventRector::bindPort(unsigned short port)
 void LibeventRector::onAccept(int fd)
 {
   Connection *connection = new Connection(fd);
-  struct event *pEvent = event_new(base_, fd, EV_READ, onRead, connection);
+  struct event *pEvent = event_new(pBase_, fd, EV_READ, onRead, connection);
   if (pEvent == nullptr)
   {
     LOG(ERROR) << "create event failed!";
@@ -74,27 +83,82 @@ void LibeventRector::onAccept(int fd)
 
 bool LibeventRector::addEventHandler(int fd, short event, const EventReactor::EventCallback &cb)
 {
+  if(fd < 0)
+    assert(0);
   auto pCallback = new EventCallback(cb);
-  if(event == EVENT_ACCEPT && listener_ != nullptr) //accept事件
+  if(event & EVENT_ACCEPT && pListener_ == nullptr) //accept事件
   {
-    listener_ = evconnlistener_new_bind(base_, onAccept, (void *)pCallback, LEV_OPT_CLOSE_ON_FREE | LEV_OPT_REUSEABLE,
+    pListener_ = evconnlistener_new_bind(pBase_, onAccept, (void *)pCallback, LEV_OPT_CLOSE_ON_FREE | LEV_OPT_REUSEABLE,
                                         BACKLOG, (struct sockaddr *) &sin_, sizeof(sin));
-    if (listener_ == nullptr)
+    if (pListener_ == nullptr)
     {
       LOG(ERROR) << "create listener failed!";
       return false;
     }
-    return true;
+    pAcceptCallback_ = pCallback;
   }
-  else if(event == EVENT_READ || event == EVENT_WRITE || event == EVENT_TIMEOUT)  //IO事件
+  else if(event & EVENT_MESSAGE)
   {
-
+    if(pMessageCallback_)
+      return false;
+    struct event *pEvent = event_new(pBase_, fd, EV_READ, onMessage, pCallback);
+    if (pEvent == nullptr)
+    {
+      LOG(ERROR) << "create event failed!";
+      return false;
+    }
+    if (event_add(pEvent, nullptr) < 0)
+    {
+      LOG(ERROR) << "add event failed!";
+      return false;
+    }
+    pMessageCallback_ = pCallback;
+    pMessageEvent_ = pEvent;
   }
+  else if(event & EVENT_READ)  //读事件
+  {
+    if(eventBundleMap_[fd].pReadCallback_)
+      return false;
+
+    struct event *pEvent = event_new(pBase_, fd, EV_READ, onRead, pCallback);
+    if (pEvent == nullptr)
+    {
+      LOG(ERROR) << "create event failed!";
+      return false;
+    }
+    if (event_add(pEvent, nullptr) < 0)
+    {
+      LOG(ERROR) << "add event failed!";
+      return false;
+    }
+    eventBundleMap_[fd].pEvent_ = pEvent;
+    eventBundleMap_[fd].pReadCallback_ = pCallback;
+  }
+  else if(event & EVENT_WRITE)  //写事件
+  {
+    if(eventBundleMap_[fd].pWriteCallback_)
+      return false;
+
+    struct event *pEvent = event_new(pBase_, fd, EV_READ, onRead, pCallback);
+    if (pEvent == nullptr)
+    {
+      LOG(ERROR) << "create event failed!";
+      return false;
+    }
+    if (event_add(pEvent, nullptr) < 0)
+    {
+      LOG(ERROR) << "add event failed!";
+      return false;
+    }
+    eventBundleMap_[fd].pEvent_ = pEvent;
+    eventBundleMap_[fd].pWriteCallback_ = pCallback;
+  }
+
 }
 
 bool LibeventRector::removeEventHandler(int fd, short event, const EventReactor::EventCallback &cb)
 {
-  return EventReactor::removeEventHandler(fd, event, cb);
+
 }
 
 bool LibeventRector::freeEvenrHandler(int fd, short event, const EventReactor::EventCallback &cb)

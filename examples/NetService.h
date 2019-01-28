@@ -10,8 +10,6 @@
 
 class NetService : public InteractiveTask{
 public:
-    NetService(string name);
-
     NetService(const string &name);
 
     bool init() override;

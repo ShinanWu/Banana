@@ -20,23 +20,38 @@ using namespace std;
 
 class LibeventRector : public EventReactor
 {
-
 public:
+#define MAX_FD_NUM 50000 //默认最多5W连接
+  typedef struct
+  {
+    short events_;
+    struct event *pEvent_;
+    EventCallback *pWriteCallback_;
+    EventCallback *pReadCallback_;
+  }EventBundle;
+
   LibeventRector();
   ~LibeventRector();
 public:
-  virtual bool createReactor();
+  virtual bool createReactor(int maxFds);
   virtual void destroyReactor();
   virtual bool bindPort(unsigned short port);
   virtual bool addEventHandler(int fd, short event, const EventCallback &cb);
+  virtual bool enableEvent(int fd, short events);
+  virtual bool disableEvent(int fd, short events);
   virtual bool removeEventHandler(int fd, short event, const EventCallback &cb);
-  virtual bool freeEvenrHandler(int fd, short event, const EventCallback &cb)
+ // virtual bool freeEvenrHandler(int fd, short event, const EventCallback &cb)
   virtual void startEventLoop();
 
 private:
-  struct event_base *base_;
-  struct evconnlistener *listener_;
+  struct event_base *pBase_;
+  struct evconnlistener *pListener_;
   struct sockaddr_in sin_;
+  EventCallback *pAcceptCallback_;
+  EventCallback *pMessageCallback_;
+  struct event *pMessageEvent_;
+  EventBundle* eventBundleMap_;
+
 private:
   static void onAccept(struct evconnlistener *listener,
                        evutil_socket_t fd,

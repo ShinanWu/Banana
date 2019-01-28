@@ -24,6 +24,7 @@ class InteractiveTask : public Task
  public:
   InteractiveTask(const string &name);
   void start();
+  virtual bool innerInit();
   virtual bool init() = 0;
   virtual void onMessage(const shared_ptr<Message> &spMessage) = 0; //接收消息的处理函数
 
