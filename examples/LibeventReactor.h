@@ -24,8 +24,10 @@ public:
 #define MAX_FD_NUM 50000 //默认最多5W连接
   typedef struct
   {
-    short events_;
-    struct event *pEvent_;
+    bool isWriteEnabled;
+    bool isReadEnabled;
+    struct event *pWriteEvent_;
+    struct event *pReadEvent_;
     EventCallback *pWriteCallback_;
     EventCallback *pReadCallback_;
   }EventBundle;
@@ -40,7 +42,6 @@ public:
   virtual bool enableEvent(int fd, short events);
   virtual bool disableEvent(int fd, short events);
   virtual bool removeEventHandler(int fd, short event, const EventCallback &cb);
- // virtual bool freeEvenrHandler(int fd, short event, const EventCallback &cb)
   virtual void startEventLoop();
 
 private:
@@ -58,10 +59,7 @@ private:
                        struct sockaddr *addr,
                        int len,
                        void *pCallback);
-  static void onRead(evutil_socket_t fd, short events, void *pCallback);
-  static void onWrite(evutil_socket_t fd, short events, void *pCallback);
-  static void onMessage(evutil_socket_t fd, short events, void *pCallback);
-
+  static void onEvent(evutil_socket_t fd, short event, void *pCallback);
 };
 
 #endif //SEVICEFRAMEWORK_LIBEVENTOBJ_H

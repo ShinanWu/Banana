@@ -99,71 +99,154 @@ bool LibeventRector::addEventHandler(int fd, short event, const EventReactor::Ev
   }
   else if(event & EVENT_MESSAGE)
   {
-    if(pMessageCallback_)
+    if(pMessageEvent_)
       return false;
-    struct event *pEvent = event_new(pBase_, fd, EV_READ, onMessage, pCallback);
-    if (pEvent == nullptr)
+    struct event *pMessageEvent = event_new(pBase_, fd, EV_READ|EV_PERSIST, onEvent, pCallback);
+    if (pMessageEvent == nullptr)
     {
       LOG(ERROR) << "create event failed!";
       return false;
     }
-    if (event_add(pEvent, nullptr) < 0)
+    if (event_add(pMessageEvent, nullptr) < 0)
     {
       LOG(ERROR) << "add event failed!";
       return false;
     }
+    pMessageEvent_ = pMessageEvent;
     pMessageCallback_ = pCallback;
-    pMessageEvent_ = pEvent;
+
   }
   else if(event & EVENT_READ)  //读事件
   {
     if(eventBundleMap_[fd].pReadCallback_)
       return false;
 
-    struct event *pEvent = event_new(pBase_, fd, EV_READ, onRead, pCallback);
-    if (pEvent == nullptr)
+    struct event *pReadEvent = event_new(pBase_, fd, EV_READ|EV_PERSIST, onEvent, pCallback);
+    if (pReadEvent == nullptr)
     {
-      LOG(ERROR) << "create event failed!";
+      LOG(ERROR) << "create EV_READ failed!";
       return false;
     }
-    if (event_add(pEvent, nullptr) < 0)
+    if (event_add(pReadEvent, nullptr) < 0)
     {
-      LOG(ERROR) << "add event failed!";
+      LOG(ERROR) << "add EV_READ failed!";
       return false;
     }
-    eventBundleMap_[fd].pEvent_ = pEvent;
+    eventBundleMap_[fd].pReadEvent_ = pReadEvent;
     eventBundleMap_[fd].pReadCallback_ = pCallback;
+    eventBundleMap_[fd].isReadEnabled = true;
   }
   else if(event & EVENT_WRITE)  //写事件
   {
     if(eventBundleMap_[fd].pWriteCallback_)
       return false;
 
-    struct event *pEvent = event_new(pBase_, fd, EV_READ, onRead, pCallback);
-    if (pEvent == nullptr)
+    struct event *pWriteEvent = event_new(pBase_, fd, EV_WRITE, onEvent, pCallback);
+    if (pWriteEvent == nullptr)
     {
-      LOG(ERROR) << "create event failed!";
+      LOG(ERROR) << "create EV_WRITE failed!";
       return false;
     }
     if (event_add(pEvent, nullptr) < 0)
     {
-      LOG(ERROR) << "add event failed!";
+      LOG(ERROR) << "add EV_WRITE failed!";
       return false;
     }
-    eventBundleMap_[fd].pEvent_ = pEvent;
+    eventBundleMap_[fd].pWriteEvent_ = pWriteEvent;
     eventBundleMap_[fd].pWriteCallback_ = pCallback;
+    eventBundleMap_[fd].isWriteEnabled = true;
   }
 
 }
 
-bool LibeventRector::removeEventHandler(int fd, short event, const EventReactor::EventCallback &cb)
+bool LibeventRector::enableEvent(int fd, short events)
 {
-
+  if(fd < 0){assert(0);}
+  if(events & EVENT_WRITE && eventBundleMap_[fd].pWriteEvent_)
+  {
+   if(!eventBundleMap_[fd].isWriteEnabled)
+   {
+     if(event_add(eventBundleMap_[fd].pWriteEvent_, nullptr) < 0)
+     {
+       assert(0);
+     }
+     eventBundleMap_[fd].isWriteEnabled = true;
+   }
+  }
+  if(events |= EVENT_READ && eventBundleMap_[fd].pReadEvent_)
+  {
+    if(!eventBundleMap_[fd].isReadEnabled)
+    {
+      if(event_add(eventBundleMap_[fd].pReadEvent_, nullptr) < 0)
+      {
+        assert(0);
+      }
+      eventBundleMap_[fd].isReadEnabled = true;
+    }
+  }
+  return true;
 }
 
-bool LibeventRector::freeEvenrHandler(int fd, short event, const EventReactor::EventCallback &cb)
+bool LibeventRector::disableEvent(int fd, short events)
 {
-  return EventReactor::freeEvenrHandler(fd, event, cb);
+  if(fd < 0) assert(0);
+  if(events & EVENT_READ && eventBundleMap_[fd].pReadEvent_)
+  {
+    if(event_del(eventBundleMap_[fd].pReadEvent_) < 0)
+    {
+      assert(0);
+    }
+    eventBundleMap_[fd].isReadEnabled = false;
+  }
+  if(events & EVENT_WRITE && eventBundleMap_[fd].pWriteEvent_)
+  {
+    if(event_del(eventBundleMap_[fd].pWriteEvent_) < 0)
+    {
+      assert(0);
+    }
+    eventBundleMap_[fd].isWriteEnabled = false;
+  }
+
+  return true;
+}
+
+bool LibeventRector::removeEventHandler(int fd, short event, const EventReactor::EventCallback &cb)
+{
+  if(fd < 0) assert(0);
+  if(events & EVENT_READ && eventBundleMap_[fd].pReadEvent_)
+  {
+    if(event_del(eventBundleMap_[fd].pReadEvent_) < 0)
+    {
+      assert(0);
+    }
+    event_free(eventBundleMap_[fd].pReadEvent_);
+    eventBundleMap_[fd].pReadEvent_ = nullptr;
+
+    if(eventBundleMap_[fd].pReadCallback_)
+    {
+      delete eventBundleMap_[fd].pReadCallback_;
+      eventBundleMap_[fd].pReadCallback_ = nullptr;
+    }
+    eventBundleMap_[fd].isReadEnabled = false;
+  }
+  if(events & EVENT_WRITE && eventBundleMap_[fd].pWriteEvent_)
+  {
+    if(event_del(eventBundleMap_[fd].pWriteEvent_) < 0)
+    {
+      assert(0);
+    }
+    event_free(eventBundleMap_[fd].pWriteEvent_);
+    eventBundleMap_[fd].pWriteEvent_ = nullptr;
+
+    if(eventBundleMap_[fd].pWriteCallback_)
+    {
+      delete eventBundleMap_[fd].pWriteCallback_;
+      eventBundleMap_[fd].pWriteCallback_ = nullptr;
+    }
+    eventBundleMap_[fd].isWriteEnabled = false;
+  }
+
+  return true;
 }
 
 void LibeventRector::onAccept(evconnlistener *listener,
@@ -176,26 +259,18 @@ void LibeventRector::onAccept(evconnlistener *listener,
   (*pAcceptCall)(fd, EVENT_ACCEPT);
 }
 
-void LibeventRector::onRead(evutil_socket_t fd, short events, void *pCallback)
+void LibeventRector::onEvent(evutil_socket_t fd, short event, void *pCallback)
 {
-  auto pReadCall = static_cast<EventCallback *> (pCallback);
-  (*pReadCall)(fd, events);
+  auto pCall = static_cast<EventCallback *> (pCallback);
+  (*pCall)(fd, event);
 }
 
-void LibeventRector::onWrite(evutil_socket_t fd, short events, void *pCallback)
-{
-  auto pWriteCall = static_cast<EventCallback *> (pCallback);
-  (*pWriteCall)(fd, events);
-}
 
-void LibeventRector::onMessage(evutil_socket_t fd, short events, void *pCallback)
-{
-  auto pMessageCall = static_cast<EventCallback *> (pCallback);
-  (*pMessageCall)(fd, events);
-}
 
 void LibeventRector::startEventLoop()
 {
-  EventReactor::startEventLoop();
+  assert(pBase_ != nullptr);
+  event_base_dispatch(pBase_);
 }
+
 
