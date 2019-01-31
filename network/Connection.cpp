@@ -11,7 +11,7 @@ void Connection::setPEvent_(struct event* pEvent)
 {
   pEvent_ = pEvent;
 }
-const Stream &Connection::getStream_() const
+const StringStreamParser &Connection::getStream_() const
 {
   return stream_;
 }

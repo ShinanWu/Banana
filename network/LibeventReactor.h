@@ -13,7 +13,7 @@
 #include <arpa/inet.h>
 #include <string>
 #include "Task.h"
-#include "EventReactor.h"
+#include "network/EventReactor.h"
 #include "Connection.h"
 
 using namespace std;

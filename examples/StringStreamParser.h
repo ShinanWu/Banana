@@ -11,7 +11,7 @@
 
 using namespace std;
 
-class Stream
+class StringStreamParser
 {
 #define DEFAULT_BUFF_LEN (1024) //1k
 #define RECV_BUFF_MAX_SIZE (1024 * 1024 * 500) //500M
@@ -21,12 +21,12 @@ class Stream
     RECVING, RECVHEAD, RECVBODY, RECVED, SENDING, SENDED, TOCLOSE //client状态
   };
  public:
-  Stream(int fd);
-  ~Stream();
+  StringStreamParser(int fd);
+  ~StringStreamParser();
   bool recvOnePck();
   bool getPck(vector<char> &recvPck);
-  bool sendPck();
   bool setPck(const vector<char> &sendPck);
+  bool sendPck();
   int getFd_() const;
   void setFd_(int fd_);
   int getRecvStat_() const;

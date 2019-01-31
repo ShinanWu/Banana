@@ -14,10 +14,7 @@ class Task {
     
 public:
     virtual void start();
-    virtual void run();
-    virtual bool init();
-    virtual void onMessage();
-
+    virtual void run() = 0;
 };
 
 #endif //SEVICEFRAMEWORK_TASK_H

@@ -14,6 +14,7 @@
 #include "Task.h"
 #include "ConcurrentRingBuffer.h"
 #include "Message.h"
+#include "network/EventReactor.h"
 
 using namespace std;
 
@@ -23,16 +24,15 @@ class InteractiveTask : public Task
 
  public:
   InteractiveTask(const string &name);
-  void start();
-  virtual bool innerInit();
-  virtual bool init() = 0;
+  virtual void start() final;
+  virtual bool init();
+  virtual void run() final;
   virtual void onMessage(const shared_ptr<Message> &spMessage) = 0; //接收消息的处理函数
+  void onAccept(int fd);
+  virtual handle
 
   const string &getTaskName_() const;
   void setTaskName_(const string &taskName_);
-  virtual bool createReactor(); //自行选择select、poll和epoll，如果只实现onTaskMessage则阻塞read(fd)即可。
-  int createEventFd(); //创建eventFd
-  virtual bool addEvent(int eventFd, int event, EventCallback eventCallback, void *pUserData);//添加事件和回调函数
   bool waitEvent();
 
  private:
@@ -40,6 +40,7 @@ class InteractiveTask : public Task
 
  private:
   std::shared_ptr<MsgQueue> recvMsgQueue_;//每个InteractiveTask独占一个消息队列，生命周期和task一致
+  std::shared_ptr<EventReactor> eventReactor_;
   std::string taskName_;
   int eventFd_;
 };

@@ -4,9 +4,9 @@
 
 #ifndef SEVICEFRAMEWORK_CONNECTION_H
 #define SEVICEFRAMEWORK_CONNECTION_H
-#include <examples/Stream.h>
+#include <examples/StringStreamParser.h>
 #include "Stream.h"
-#include "EventReactor.h"
+#include "network/EventReactor.h"
 
 class Connection
 {
@@ -17,12 +17,12 @@ class Connection
   void onWrite();
  private:
   struct event *pEvent_;
-  Stream stream_;
+  StringStreamParser stream_;
   EventReactor* reactor_;
 
  public:
   struct event *getPEvent_() const;
-  const Stream &getStream_() const;
+  const StringStreamParser &getStream_() const;
   void setPEvent_(event *pEvent_);
   EventReactor *getReactor_() const;
   void setReactor_(EventReactor *reactor_);

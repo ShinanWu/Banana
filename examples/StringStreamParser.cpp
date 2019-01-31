@@ -5,13 +5,13 @@
 //非线程安全
 
 #include <unistd.h>
-#include "Stream.h"
+#include "StringStreamParser.h"
 #include "Message.h"
 #include <errno.h>
 #include <logging.h>
 #include <string.h>
 
-Stream::Stream(int fd)
+StringStreamParser::StringStreamParser(int fd)
     : fd_(fd),
       recvLen_(0),
       needRecvLen_(HEADER_LEN),
@@ -24,7 +24,7 @@ Stream::Stream(int fd)
 
 }
 
-bool Stream::recvOnePck()
+bool StringStreamParser::recvOnePck()
 {
   if (getRecvStat_() == RECVED)
     return true;
@@ -72,7 +72,7 @@ bool Stream::recvOnePck()
   }
 }
 
-bool Stream::getPck(vector<char> &recvPck)
+bool StringStreamParser::getPck(vector<char> &recvPck)
 {
   if (getRecvStat_() == RECVED)
   {
@@ -84,7 +84,7 @@ bool Stream::getPck(vector<char> &recvPck)
   return false;
 }
 
-bool Stream::sendPck()
+bool StringStreamParser::sendPck()
 {
   if(getSendStat_() == SENDED)
   {
@@ -122,7 +122,7 @@ bool Stream::sendPck()
   return false;
 }
 
-bool Stream::setPck(const vector<char> &sendPck)
+bool StringStreamParser::setPck(const vector<char> &sendPck)
 {
   if (getSendStat_() == SENDED)
   {
@@ -136,32 +136,32 @@ bool Stream::setPck(const vector<char> &sendPck)
   return false;
 }
 
-int Stream::getFd_() const
+int StringStreamParser::getFd_() const
 {
   return fd_;
 }
 
-void Stream::setFd_(int fd_)
+void StringStreamParser::setFd_(int fd_)
 {
-  Stream::fd_ = fd_;
+  StringStreamParser::fd_ = fd_;
 }
 
-int Stream::getRecvStat_() const
+int StringStreamParser::getRecvStat_() const
 {
   return recvStat_;
 }
 
-void Stream::setRecvStat_(int stat_)
+void StringStreamParser::setRecvStat_(int stat_)
 {
-  Stream::recvStat_ = stat_;
+  StringStreamParser::recvStat_ = stat_;
 }
-int Stream::getSendStat_() const
+int StringStreamParser::getSendStat_() const
 {
   return sendStat_;
 }
-void Stream::setSendStat_(int sendStat_)
+void StringStreamParser::setSendStat_(int sendStat_)
 {
-  Stream::sendStat_ = sendStat_;
+  StringStreamParser::sendStat_ = sendStat_;
 }
 
 

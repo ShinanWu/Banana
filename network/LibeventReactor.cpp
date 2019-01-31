@@ -3,7 +3,7 @@
 //
 
 #include "LibeventReactor.h"
-#include "Stream.h"
+#include "examples/StringStreamParser.h"
 #include <memory>
 #include <stdlib.h>
 
@@ -59,26 +59,6 @@ bool LibeventRector::bindPort(unsigned short port)
   sin_.sin_addr.s_addr = htonl(0);//监听所有IP
   sin_.sin_port = htons(port);
   return true;
-}
-
-void LibeventRector::onAccept(int fd)
-{
-  Connection *connection = new Connection(fd);
-  struct event *pEvent = event_new(pBase_, fd, EV_READ, onRead, connection);
-  if (pEvent == nullptr)
-  {
-    LOG(ERROR) << "create event failed!";
-    return;
-  }
-  connection->setPEvent_(pEvent);
-  connection->setReactor_(this);
-
-  if (event_add(pEvent, nullptr) < 0)
-  {
-    LOG(ERROR) << "add event failed!";
-    return;
-  }
-
 }
 
 bool LibeventRector::addEventHandler(int fd, short event, const EventReactor::EventCallback &cb)
