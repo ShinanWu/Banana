@@ -3,23 +3,48 @@
 //
 
 #include "Connection.h"
-struct event* Connection::getPEvent_() const
+#include "examples/StringStream.h"
+
+Connection::Connection(int fd,
+                       struct event *pEvent,
+                       const SpEventReactor &spEventReactor)
+    : pEvent_(pEvent_)
+    , stringStream_(fd)
+    , spEventReactor_(spEventReactor)
+{}
+
+void Connection::onRead()
 {
-  return pEvent_;
+  StreamStat streamStat = stringStream_.recvOnePck();
+  if(streamStat == TOCLOSE)
+  {
+    onClose();
+    LOG(ERROR) << "stream closed";
+    return;
+  }
+  else if(streamStat == RECVED)
+  {
+    string message;
+    stringStream_.getPck(message);
+    onMessage(message);
+  }
+  else
+  {
+    return;
+  }
 }
-void Connection::setPEvent_(struct event* pEvent)
+void Connection::onWrite()
 {
-  pEvent_ = pEvent;
+  if(stringStream_.sendPck() == TOCLOSE)
+  {
+    onClose();
+  }
 }
-const StringStreamParser &Connection::getStream_() const
+void Connection::onClose()
 {
-  return stream_;
+
 }
-EventReactor *Connection::getReactor_() const
+void Connection::onMessage(const string &message)
 {
-  return reactor_;
-}
-void Connection::setReactor_(EventReactor *reactor_)
-{
-  Connection::reactor_ = reactor_;
+
 }

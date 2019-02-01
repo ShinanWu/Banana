@@ -5,13 +5,13 @@
 //非线程安全
 
 #include <unistd.h>
-#include "StringStreamParser.h"
+#include "StringStream.h"
 #include "Message.h"
 #include <errno.h>
 #include <logging.h>
 #include <string.h>
 
-StringStreamParser::StringStreamParser(int fd)
+StringStream::StringStream(int fd)
     : fd_(fd),
       recvLen_(0),
       needRecvLen_(HEADER_LEN),
@@ -24,36 +24,36 @@ StringStreamParser::StringStreamParser(int fd)
 
 }
 
-bool StringStreamParser::recvOnePck()
+StreamStat StringStream::recvOnePck()
 {
   if (getRecvStat_() == RECVED)
-    return true;
+    return RECVED;
 
   int recvLen = read(fd_, &recvBuf_[recvLen_], needRecvLen_);
   if (recvLen == 0)//对端关闭连接
   {
     setRecvStat_(TOCLOSE);
     LOG(ERROR) << "client:" << id_ << " closed!";
-    return false;
+    return TOCLOSE;
   }
   if (recvLen == -1)
   {
     if (errno == EINTR || errno == EWOULDBLOCK || errno == EAGAIN)
     {
-      return false; //需要继续接收数据
+      return getRecvStat_(); //需要继续接收数据
     }
     else
     {
       LOG(ERROR) << "unexpected recv error! need close this client:" << id_ << ", errno:" << errno;
       setRecvStat_(TOCLOSE);
-      return false;
+      return TOCLOSE;
     }
   }
   if (recvLen < needRecvLen_)//还没收全一帧数据
   {
     recvLen_ += recvLen;
     needRecvLen_ -= recvLen;
-    return false;
+    return getRecvStat_();
   }
   else
   {
@@ -62,21 +62,21 @@ bool StringStreamParser::recvOnePck()
       needRecvLen_ = *（(int *) &recvBuf_[0]);
       recvBuf_.resize(HEADER_LEN + needRecvLen_);
       setRecvStat_(RECVBODY);
-      return false;
+      return getRecvStat_();
     }
     else if (getRecvStat_() == RECVBODY)
     {
       setRecvStat_(RECVED);
-      return true;
+      return getRecvStat_();
     }
   }
 }
 
-bool StringStreamParser::getPck(vector<char> &recvPck)
+bool StringStream::getPck(string &recvPck)
 {
   if (getRecvStat_() == RECVED)
   {
-    recvPck = recvBuf_;
+    recvPck = string(&recvBuf_[0], recvBuf_.size());//移动构造提高效率
     setRecvStat_(RECVHEAD);//取走数据继续接收
     recvLen_ = 0;
     return true;
@@ -84,11 +84,11 @@ bool StringStreamParser::getPck(vector<char> &recvPck)
   return false;
 }
 
-bool StringStreamParser::sendPck()
+StreamStat StringStream::sendPck()
 {
   if(getSendStat_() == SENDED)
   {
-    return true;
+    return getSendStat_();
   }
   if (getSendStat_() == SENDING)
   {
@@ -97,71 +97,71 @@ bool StringStreamParser::sendPck()
     {
       if (errno == EINTR || errno == EWOULDBLOCK || errno == EAGAIN)
       {
-        return false; //需要继续发送数据
+        return getSendStat_(); //需要继续发送数据
       }
       else
       {
         setSendStat_(TOCLOSE);
         LOG(ERROR) << "unexpected send error! need close this client:" << id_ << ", errno:" << errno;
+        return getSendStat_();
       }
     }
     if (sendLen == 0)
     {
       setSendStat_(TOCLOSE);
       LOG(ERROR) << "client:" << id_ << " closed!";
-      return false;
+      return getSendStat_();
     }
 
     sendLen_ += sendLen;
     if (sendLen_ == sendBuf_.size())
     {
       setSendStat_(SENDED);
-      return true;
+      return getSendStat_();
     }
   }
-  return false;
 }
 
-bool StringStreamParser::setPck(const vector<char> &sendPck)
+bool StringStream::setPck(const string &sendPck)
 {
   if (getSendStat_() == SENDED)
   {
     int dataLen = sendPck.size();
     sendBuf_.resize(HEADER_LEN + dataLen);
     memcpy(&sendBuf_[0], &dataLen, HEADER_LEN);
-    memcpy(&sendBuf_[0] + HEADER_LEN, &sendPck[0], dataLen);
+    memcpy(&sendBuf_[0] + HEADER_LEN, sendPck.data(), dataLen);
     setSendStat_(SENDING);
     return true;
   }
   return false;
 }
 
-int StringStreamParser::getFd_() const
+int StringStream::getFd_() const
 {
   return fd_;
 }
 
-void StringStreamParser::setFd_(int fd_)
+void StringStream::setFd_(int fd_)
 {
-  StringStreamParser::fd_ = fd_;
+  StringStream::fd_ = fd_;
 }
 
-int StringStreamParser::getRecvStat_() const
+StreamStat StringStream::getRecvStat_() const
 {
   return recvStat_;
 }
 
-void StringStreamParser::setRecvStat_(int stat_)
+void StringStream::setRecvStat_(StreamStat stat_)
 {
-  StringStreamParser::recvStat_ = stat_;
+  StringStream::recvStat_ = stat_;
 }
-int StringStreamParser::getSendStat_() const
+StreamStat StringStream::getSendStat_() const
 {
   return sendStat_;
 }
-void StringStreamParser::setSendStat_(int sendStat_)
+void StringStream::setSendStat_(StreamStat sendStat_)
 {
-  StringStreamParser::sendStat_ = sendStat_;
+  StringStream::sendStat_ = sendStat_;
 }
 
 

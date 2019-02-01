@@ -9,30 +9,31 @@
 #include <string>
 #include "Message.h"
 
+typedef enum
+{
+  RECVING, RECVHEAD, RECVBODY, RECVED, SENDING, SENDED, TOCLOSE //流状态
+}StreamStat;
 using namespace std;
 
-class StringStreamParser
+class StringStream
 {
+#define HEADER_LEN
 #define DEFAULT_BUFF_LEN (1024) //1k
 #define RECV_BUFF_MAX_SIZE (1024 * 1024 * 500) //500M
 #define SEND_BUFF_MAX_SIZE (1024 * 1024 * 100) //100M 均需根据实际业务作调整，比如即时通信客户端多，buffer小，取较小合适值即可
-  enum
-  {
-    RECVING, RECVHEAD, RECVBODY, RECVED, SENDING, SENDED, TOCLOSE //client状态
-  };
  public:
-  StringStreamParser(int fd);
-  ~StringStreamParser();
-  bool recvOnePck();
-  bool getPck(vector<char> &recvPck);
-  bool setPck(const vector<char> &sendPck);
-  bool sendPck();
+  StringStream(int fd);
+  ~StringStream();
+  StreamStat recvOnePck();
+  bool getPck(string &recvPck);
+  bool setPck(const string &sendPck);
+  StreamStat sendPck();
   int getFd_() const;
   void setFd_(int fd_);
-  int getRecvStat_() const;
-  void setRecvStat_(int stat_);
-  int getSendStat_() const;
-  void setSendStat_(int sendStat_);
+  StreamStat getRecvStat_() const;
+  void setRecvStat_(StreamStat stat_);
+  StreamStat getSendStat_() const;
+  void setSendStat_(StreamStat sendStat_);
 
  private:
   int fd_;
@@ -40,8 +41,8 @@ class StringStreamParser
   int needRecvLen_;
   int sendLen_;
   int needSendLen_;
-  int recvStat_;
-  int sendStat_;
+  StreamStat recvStat_;
+  StreamStat sendStat_;
   vector<char> recvBuf_; //接收信息的buffer
   vector<char> sendBuf_; //发送的buffer
 };
