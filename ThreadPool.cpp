@@ -7,9 +7,9 @@
 #include <logging.h>
 #include <assert.h>
 
-ThreadPool::ThreadPool(int threadNum, int taskNum)
+ThreadPool::ThreadPool(int threadNum, int taskQueueSize)
     :threadNum_(threadNum)
-    ,taskQueue_(taskNum)
+    ,taskQueue_(taskQueueSize)
 {
 
 }

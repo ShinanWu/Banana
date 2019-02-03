@@ -23,7 +23,7 @@ private:
     ConcurrentRingBuffer<std::shared_ptr<Task>> taskQueue_;
 
 public:
-    explicit ThreadPool(int threadNum, int taskNum=TASK_QUEUE_MAX_SIZE);
+    explicit ThreadPool(int threadNum, int taskQueueSize=TASK_QUEUE_MAX_SIZE);
     ~ThreadPool();
     void syncPostTask(const std::shared_ptr<Task> &task);
     bool asyncPostTask(const std::shared_ptr<Task> &task);

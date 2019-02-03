@@ -19,7 +19,7 @@ LibeventRector::~LibeventRector()
   destroyReactor();
 }
 
-bool LibeventRector::createReactor(int maxFds)
+bool LibeventRector::initReactor(int maxFds)
 {
   pBase_ = event_base_new();
   if (pBase_ == nullptr)

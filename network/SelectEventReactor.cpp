@@ -3,9 +3,9 @@
 //
 
 #include "SelectEventReactor.h"
-bool SelectEventReactor::createReactor(int maxFds)
+bool SelectEventReactor::initReactor(int maxFds)
 {
-  return EventReactor::createReactor(maxFds);
+  return EventReactor::initReactor(maxFds);
 }
 void SelectEventReactor::destroyReactor()
 {

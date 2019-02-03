@@ -35,7 +35,7 @@ public:
   LibeventRector();
   ~LibeventRector();
 public:
-  virtual bool createReactor(int maxFds);
+  virtual bool initReactor(int maxFds);
   virtual void destroyReactor();
   virtual bool bindPort(unsigned short port);
   virtual bool addEventHandler(int fd, short event, const EventCallback &cb);

@@ -12,7 +12,7 @@
 class SelectEventReactor : public EventReactor
 {
 public:
-  virtual bool createReactor(int maxFds);
+  virtual bool initReactor(int maxFds);
   virtual void destroyReactor();
   virtual bool addEventHandler(int fd, short event, const EventCallback &cb);
   virtual bool enableEvent(int fd, short events);
