@@ -14,7 +14,7 @@
 
 NetService::NetService(const string &name) : InteractiveTask(name) {}
 
-bool NetService::init() {
+bool NetService::onStart() {
     struct event_base* base;
     base = event_base_new();
 

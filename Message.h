@@ -1,6 +1,6 @@
 //
 // Created by Shinan on 2019/1/19.
-//
+//消息基类，整个框架以此消息结构为基础，可设置回调函数返回应答消息
 
 #ifndef SEVICEFRAMEWORK_MESSAGES_H
 #define SEVICEFRAMEWORK_MESSAGES_H

@@ -22,20 +22,27 @@ class LibeventRector : public EventReactor
 {
 public:
 #define MAX_FD_NUM 50000 //默认最多5W连接
-  typedef struct
+  typedef struct _EventBundle //事件相关数据
   {
-    bool isWriteEnabled;
-    bool isReadEnabled;
-    struct event *pWriteEvent_;
-    struct event *pReadEvent_;
-    EventCallback *pWriteCallback_;
-    EventCallback *pReadCallback_;
+    bool isWriteEnabled = false;
+    bool isReadEnabled = false;
+    struct event *pWriteEvent_ = nullptr;
+    struct event *pReadEvent_ = nullptr;
+    EventCallback *pWriteCallback_ = nullptr;
+    EventCallback *pReadCallback_ = nullptr;
+    ~_EventBundle()
+    {
+      if(pWriteEvent_){delete pWriteEvent_; pWriteEvent_ = nullptr;}
+      if(pReadEvent_){delete pReadEvent_; pReadEvent_ = nullptr;}
+      if(pWriteCallback_){delete pWriteCallback_; pWriteCallback_ = nullptr;}
+      if(pReadCallback_){delete pReadCallback_; pReadCallback_ = nullptr;}
+    }
   }EventBundle;
 
   LibeventRector();
   ~LibeventRector();
 public:
-  virtual bool initReactor(int maxFds);
+  virtual bool initReactor(int maxFds = MAX_FD_NUM);
   virtual void destroyReactor();
   virtual bool bindPort(unsigned short port);
   virtual bool addEventHandler(int fd, short event, const EventCallback &cb);

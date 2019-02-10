@@ -21,6 +21,7 @@ LibeventRector::~LibeventRector()
 
 bool LibeventRector::initReactor(int maxFds)
 {
+  assert(maxFds > 0);
   pBase_ = event_base_new();
   if (pBase_ == nullptr)
   {
@@ -65,7 +66,7 @@ bool LibeventRector::addEventHandler(int fd, short event, const EventReactor::Ev
 {
   if(fd < 0)
     assert(0);
-  auto pCallback = new EventCallback(cb);
+  auto pCallback = new EventCallback(std::move(cb));
   if(event & EVENT_ACCEPT && pListener_ == nullptr) //accept事件
   {
     pListener_ = evconnlistener_new_bind(pBase_, onAccept, (void *)pCallback, LEV_OPT_CLOSE_ON_FREE | LEV_OPT_REUSEABLE,

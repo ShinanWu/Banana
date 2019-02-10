@@ -4,15 +4,15 @@
 #include <logging.h>
 #include "IndependentTask.h"
 
+IndependentTask::IndependentTask(const string &name) : Task(name)
+{}
+IndependentTask::~IndependentTask()
+{}
+
 void IndependentTask::start()
 {
-  if (init())
-  {
-    run();
-  }
-  DLOG(ERROR) << "task finished!";
-}
-bool IndependentTask::init()
-{
-  return true;
-}
+  LOG(INFO) << "Task " << getTaskName() << " started!";
+  run();
+  LOG(INFO) << "Task " << getTaskName() << " finished!";}
+
+

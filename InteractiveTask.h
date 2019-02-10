@@ -1,8 +1,8 @@
 //
 // Created by Shinan on 2019/1/18.
 //
-//可以相互通信的task的基类，子类需要设置线程名和实现相关函数。
-//
+//可以相互通信的task的基类，子类只需要实现onStart,onStop,onMessage等函数，
+//生命周期也即如此函数所述
 //
 #ifndef SERVICEFRAMEWORK_INTERACTIVETASK_H
 #define SERVICEFRAMEWORK_INTERACTIVETASK_H
@@ -22,26 +22,25 @@ class InteractiveTask : public Task
 {
   typedef ConcurrentRingBuffer<shared_ptr<Message>> MsgQueue;
 
- public:
-  InteractiveTask(const string &name);
-  virtual void start() final;
-  virtual bool init();
-  virtual void run() final;
-  virtual void onMessage(const shared_ptr<Message> &spMessage) = 0; //接收消息的处理函数
-  void onAccept(int fd);
-  virtual handle
+public:
+  InteractiveTask(const string &name, std::shared_ptr<EventReactor> eventReactor = nullptr);
+  virtual ~InteractiveTask();
+  void start();
+  void stop();
+  virtual bool onStart() = 0;
+  virtual bool onStop() = 0;
+  virtual void onMessage(const shared_ptr<Message> &spMessage) = 0; //接收Task间消息的处理函数
+  int sendMsg(const string &taskName, const shared_ptr<Message> &spMessage);
+  int notifyMsg(const shared_ptr<Message> &spMessage);
 
-  const string &getTaskName_() const;
-  void setTaskName_(const string &taskName_);
-  bool waitEvent();
-
- private:
+private:
+  void _onMessage(int fd, short event);
   bool _setThreadName(const string &name);
+  int _createEventFd();
 
- private:
+private:
   std::shared_ptr<MsgQueue> recvMsgQueue_;//每个InteractiveTask独占一个消息队列，生命周期和task一致
   std::shared_ptr<EventReactor> eventReactor_;
-  std::string taskName_;
   int eventFd_;
 };
 

@@ -6,15 +6,35 @@
 #define SEVICEFRAMEWORK_TASK_H
 
 #include <iostream>
-
+#include <string>
+#include "logging.h"
 
 using namespace std;
 
-class Task {
-    
+class Task
+{
 public:
-    virtual void start();
-    virtual void run() = 0;
+  Task(const string &name);
+  virtual ~Task();
+  virtual void start() = 0;
+  const string &Task::getTaskName() const;
+private:
+  const string taskName_;
 };
+
+Task::Task(const string &name) : taskName_(name)
+{
+  LOG(INFO) << "Task " << taskName_ << " created!";
+}
+
+Task::~Task()
+{
+  LOG(INFO) << "Task " << taskName_ << " destroyed!";
+}
+
+const string &Task::getTaskName() const
+{
+  return taskName_;
+}
 
 #endif //SEVICEFRAMEWORK_TASK_H

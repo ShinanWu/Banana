@@ -19,10 +19,10 @@ class TcpServer
 public:
   TcpServer(int eventReactorNum, int threadPoolNum, unsigned short listenPort);
   ~TcpServer();
-
   void start();
-  bool initEventReactors(int reactorNum);
-  bool initThreadPool(int threadNum);
+private:
+  bool _initEventReactors(int reactorNum);
+  bool _initThreadPool(int threadNum);
 private:
   int eventReactorNum_;
   vector<shared_ptr<EventReactor>> vecSpReactor_;

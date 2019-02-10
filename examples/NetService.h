@@ -12,7 +12,7 @@ class NetService : public InteractiveTask{
 public:
     NetService(const string &name);
 
-    bool init() override;
+    bool onStart() override;
 
     void onMessage(const shared_ptr<Message> &spMessage) override;
     static void acceptHandler(struct evconnlistener *listener, evutil_socket_t cfd, struct sockaddr* addr, int len, void *ptr);
