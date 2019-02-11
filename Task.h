@@ -17,7 +17,7 @@ public:
   Task(const string &name);
   virtual ~Task();
   virtual void start() = 0;
-  const string &Task::getTaskName() const;
+  const string &getTaskName() const;
 private:
   const string taskName_;
 };

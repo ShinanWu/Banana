@@ -11,7 +11,7 @@
 
 class Connection
 {
- public:
+public:
   Connection(int fd,
              struct event *pEvent,
              const SpEventReactor &spEventReactor);
@@ -20,12 +20,12 @@ class Connection
   void onWrite();
   void onMessage(const string &message);
   void onClose();
- private:
+private:
   struct event *pEvent_;
   StringStream stringStream_;
   SpEventReactor spEventReactor_;
 
- public:
+public:
   struct event *getPEvent_() const;
   const StringStream &getStream_() const;
 };

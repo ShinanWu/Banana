@@ -1,6 +1,6 @@
 //
 // Created by Shinan on 2019/1/15.
-//使用原子变量的无锁循环队列，性能高，但只试用与单生产者单消费者模式，
+//使用原子变量的无锁循环队列，性能高，但只适用与单生产者单消费者模式，
 //也可再加两把锁，一把生产者锁，一把消费者锁，生产者和消费者不存在竞争关系，会比ConcurrentRingBuffer更高效
 
 #ifndef SEVICEFRAMEWORK_WAITFREECONCURRENTRINGBUFFER_H

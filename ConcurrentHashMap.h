@@ -10,7 +10,7 @@
 #include <unordered_map>
 #include <mutex>
 
-#define DEFAULT_HASHLOCKS 500
+#define DEFAULT_HASHLOCKS 499 //选择质数
 using namespace std;
 
 template <class K, class V, size_t HASHLOCKS=DEFAULT_HASHLOCKS>
