@@ -14,12 +14,13 @@ class Message
 public:
   typedef function<void(bool ret, const Message& retMessage)> MessageCallBack;
 public:
-  Message(const string &what_, const MessageCallBack &messageCallBack_);
+  Message();
   ~Message();
 
-  bool getWhat_(string &what) const;
+  const string& getWhat() const;
   bool getMsgCallBack(MessageCallBack &msgCallBack) const;
-
+  void setWhat(const string &what_);
+  void setMessageCallBack(const MessageCallBack &messageCallBack_);
 private:
   string what_; //消息标识，决定向下转的类型和唯一标识
   MessageCallBack messageCallBack_;

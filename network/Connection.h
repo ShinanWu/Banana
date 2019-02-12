@@ -5,7 +5,7 @@
 #ifndef SEVICEFRAMEWORK_CONNECTION_H
 #define SEVICEFRAMEWORK_CONNECTION_H
 #include <memory>
-#include <examples/StringStream.h>
+#include <network/StringStream.h>
 //#include "Stream.h"
 #include "network/EventReactor.h"
 

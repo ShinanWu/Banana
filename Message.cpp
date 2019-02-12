@@ -4,16 +4,22 @@
 
 #include "Message.h"
 
-Message::Message(const string &what_, const MessageCallBack &messageCallBack_)
-    : what_(what_), messageCallBack_(std::move(messageCallBack_))//移动构造提高效率
+Message::Message()
 {}
-bool Message::getWhat_(string &what) const
+const string& Message::getWhat() const
 {
-  what = std::move(what_);
-  return true;
+  return what_;
 }
-bool Message::getMsgCallBack(Message::MessageCallBack &msgCallBack) const
+bool Message::getMsgCallBack(MessageCallBack &msgCallBack) const
 {
   msgCallBack = std::move(messageCallBack_);
   return true;
+}
+void Message::setWhat(const string &what)
+{
+  what_ = what;
+}
+void Message::setMessageCallBack(const MessageCallBack &messageCallBack)
+{
+  messageCallBack_ = std::move(messageCallBack);
 }

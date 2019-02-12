@@ -3,7 +3,7 @@
 //
 
 #include "LibeventReactor.h"
-#include "examples/StringStream.h"
+#include "StringStream.h"
 #include <memory>
 #include <stdlib.h>
 
