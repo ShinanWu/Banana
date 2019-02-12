@@ -5,7 +5,8 @@
 #ifndef SEVICEFRAMEWORK_EVENTREACTOR_H
 #define SEVICEFRAMEWORK_EVENTREACTOR_H
 #include <functional>
-#include "Connection.h"
+#include <memory>
+//#include "Connection.h"
 #include "Task.h"
 
 using namespace std;
@@ -25,14 +26,14 @@ public:
   typedef std::function<void(int fd, short event)> EventCallback;
 
 public:
-  virtual bool initReactor(int maxFds = 1);
-  virtual void destroyReactor();
-  virtual bool bindPort(unsigned short port);
-  virtual bool addEventHandler(int fd, short event, const EventCallback& cb);
-  virtual bool enableEvent(int fd, short events);
-  virtual bool disableEvent(int fd, short events);
-  virtual bool removeEventHandler(int fd, short event, const EventCallback& cb);
-  virtual void startEventLoop();
+  virtual bool initReactor(int maxFds = 1)=0;
+  virtual void destroyReactor()=0;
+  virtual bool bindPort(unsigned short port)=0;
+  virtual bool addEventHandler(int fd, short event, const EventCallback& cb)=0;
+  virtual bool enableEvent(int fd, short events)=0;
+  virtual bool disableEvent(int fd, short events)=0;
+  virtual bool removeEventHandler(int fd, short event, const EventCallback& cb)=0;
+  virtual void startEventLoop()=0;
 };
 
 typedef shared_ptr<EventReactor> SpEventReactor;

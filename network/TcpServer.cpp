@@ -1,7 +1,7 @@
 //
 // Created by Shinan on 2019/2/3.
 //
-
+#include <assert.h>
 #include "TcpServer.h"
 TcpServer::TcpServer(int eventReactorNum, int threadPoolNum, unsigned short listenPort)
     : eventReactorNum_(eventReactorNum),
@@ -22,7 +22,7 @@ bool TcpServer::_initEventReactors(int reactorNum)
   vector<shared_ptr<EventReactor>> vecSpReactor(reactorNum);
   for (auto &spReactor : vecSpReactor)
   {
-    spReactor = new LibeventRector();
+    spReactor.reset(new LibeventRector());
     if (!spReactor->initReactor(MAX_CLIENTS / (reactorNum - 1))) //减去一条accept线程
     {
       LOG(ERROR) << "onStart LibeventRector failed!";
@@ -36,6 +36,6 @@ bool TcpServer::_initEventReactors(int reactorNum)
 bool TcpServer::_initThreadPool(int threadNum)
 {
   assert(threadNum > 0); //线程池数目应该大于0
-  spThreadPool_ = new ThreadPool(threadNum);
+  spThreadPool_.reset(new ThreadPool(threadNum));
   return false;
 }

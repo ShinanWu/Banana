@@ -1,6 +1,7 @@
 //
 // Created by Shinan on 2019/2/11.
 //
+#include <assert.h>
 #include "logging.h"
 #include "StorageService.h"
 

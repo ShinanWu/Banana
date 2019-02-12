@@ -17,7 +17,7 @@ private:
 };
 
 StringMessage::StringMessage(const string &what, const Message::MessageCallBack &messageCallBack)
-    : Message(what, messageCallBack)
+    : Message()
 {}
 
 bool StringMessage::getData(string& data) const

@@ -5,6 +5,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <signal.h>
+#include <assert.h>
 
 int initLogging()
 {
@@ -25,7 +26,3 @@ int main()
   google::ShutdownGoogleLogging();
   return 0;
 }
-
-
- Created by Shinan on 2019/1/27.
-

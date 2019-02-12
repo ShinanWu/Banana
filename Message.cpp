@@ -3,6 +3,7 @@
 //
 
 #include "Message.h"
+#include <assert.h>
 
 Message::Message()
 {}

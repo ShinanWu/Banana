@@ -4,6 +4,7 @@
 #include <sys/prctl.h>
 #include <sys/eventfd.h>
 #include <unistd.h>
+#include <assert.h>
 #include "InteractiveTask.h"
 #include "MessageCenter.h"
 

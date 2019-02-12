@@ -33,7 +33,7 @@ StreamStat StringStream::recvOnePck()
   if (recvLen == 0)//对端关闭连接
   {
     setRecvStat_(TOCLOSE);
-    LOG(ERROR) << "client:" << id_ << " closed!";
+    LOG(ERROR) << "client:" << fd_ << " closed!";
     return TOCLOSE;
   }
   if (recvLen == -1)
@@ -44,7 +44,7 @@ StreamStat StringStream::recvOnePck()
     }
     else
     {
-      LOG(ERROR) << "unexpected recv error! need close this client:" << id_ << ", errno:" << errno;
+      LOG(ERROR) << "unexpected recv error! need close this client:" << fd_ << ", errno:" << errno;
       setRecvStat_(TOCLOSE);
       return TOCLOSE;
     }
@@ -59,7 +59,7 @@ StreamStat StringStream::recvOnePck()
   {
     if (getRecvStat_() == RECVHEAD)  //收完头继续收payload
     {
-      needRecvLen_ = *（(int *) &recvBuf_[0]);
+     // needRecvLen_ = *（(int *)((char*)(&recvBuf_[0]));
       recvBuf_.resize(HEADER_LEN + needRecvLen_);
       setRecvStat_(RECVBODY);
       return getRecvStat_();
@@ -102,14 +102,14 @@ StreamStat StringStream::sendPck()
       else
       {
         setSendStat_(TOCLOSE);
-        LOG(ERROR) << "unexpected send error! need close this client:" << id_ << ", errno:" << errno;
+        LOG(ERROR) << "unexpected send error! need close this client:" << fd_ << ", errno:" << errno;
         return getSendStat_();
       }
     }
     if (sendLen == 0)
     {
       setSendStat_(TOCLOSE);
-      LOG(ERROR) << "client:" << id_ << " closed!";
+      LOG(ERROR) << "client:" << fd_ << " closed!";
       return getSendStat_();
     }
 
@@ -129,7 +129,7 @@ bool StringStream::setPck(const string &sendPck)
     int dataLen = sendPck.size();
     sendBuf_.resize(HEADER_LEN + dataLen);
     memcpy(&sendBuf_[0], &dataLen, HEADER_LEN);
-    memcpy(&sendBuf_[0] + HEADER_LEN, sendPck.data(), dataLen);
+    memcpy((char*)(&sendBuf_[0]) + HEADER_LEN, sendPck.data(), dataLen);
     setSendStat_(SENDING);
     return true;
   }

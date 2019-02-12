@@ -2,6 +2,7 @@
 // Created by Shinan on 2019/2/3.
 //
 #include <memory>
+#include <assert.h>
 #include <network/TcpServer.h>
 
 #define REACTOR_NUM 4 //根据CPU数目来，一般可设为CPU数目相当
@@ -22,9 +23,9 @@ public:
 
 };
 
-int main()
-{
-  StorageServer storageServer(REACTOR_NUM, THREAD_POOL_NUM, LISTEN_PORT);
-  storageServer.start();
-  LOG(ERROR) << "Storage Server stoped!";
-}
+//int main()
+//{
+//  StorageServer storageServer(REACTOR_NUM, THREAD_POOL_NUM, LISTEN_PORT);
+//  storageServer.start();
+//  LOG(ERROR) << "Storage Server stoped!";
+//}

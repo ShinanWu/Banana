@@ -17,7 +17,7 @@ using namespace std;
 
 class StringStream
 {
-#define HEADER_LEN
+#define HEADER_LEN 4
 #define DEFAULT_BUFF_LEN (1024) //1k
 #define RECV_BUFF_MAX_SIZE (1024 * 1024 * 500) //500M
 #define SEND_BUFF_MAX_SIZE (1024 * 1024 * 100) //100M 均需根据实际业务作调整，比如即时通信客户端多，buffer小，取较小合适值即可

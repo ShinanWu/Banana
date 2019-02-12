@@ -12,9 +12,14 @@
 #include <dirent.h>
 #include <arpa/inet.h>
 #include <string>
-#include "Task.h"
+#include <event2/listener.h>
+#include <event2/util.h>
+#include <event2/event.h>
+//#include "Task.h"
 #include "network/EventReactor.h"
-#include "Connection.h"
+//#include "Connection.h"
+
+
 
 using namespace std;
 
@@ -61,12 +66,12 @@ private:
   EventBundle* eventBundleMap_;
 
 private:
-  static void onAccept(struct evconnlistener *listener,
-                       evutil_socket_t fd,
-                       struct sockaddr *addr,
-                       int len,
-                       void *pCallback);
-  static void onEvent(evutil_socket_t fd, short event, void *pCallback);
+  static void __onAccept(struct evconnlistener *listener,
+                         evutil_socket_t fd,
+                         struct sockaddr *addr,
+                         int len,
+                         void *pCallback);
+  static void __onEvent(evutil_socket_t fd, short event, void *pCallback);
 };
 
 #endif //SEVICEFRAMEWORK_LIBEVENTOBJ_H

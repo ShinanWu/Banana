@@ -14,27 +14,23 @@ using namespace std;
 class Task
 {
 public:
-  Task(const string &name);
-  virtual ~Task();
+  Task(const string &name)
+  {
+    LOG(INFO) << "Task " << taskName_ << " created!";
+  }
+  virtual ~Task()
+  {
+    LOG(INFO) << "Task " << taskName_ << " destroyed!";
+  }
   virtual void start() = 0;
-  const string &getTaskName() const;
+
+  const string &getTaskName() const
+  {
+    return taskName_;
+  }
 private:
   const string taskName_;
 };
 
-Task::Task(const string &name) : taskName_(name)
-{
-  LOG(INFO) << "Task " << taskName_ << " created!";
-}
-
-Task::~Task()
-{
-  LOG(INFO) << "Task " << taskName_ << " destroyed!";
-}
-
-const string &Task::getTaskName() const
-{
-  return taskName_;
-}
 
 #endif //SEVICEFRAMEWORK_TASK_H
