@@ -12,8 +12,9 @@
 
 using namespace std::placeholders;
 
-InteractiveTask::InteractiveTask(const string &name)
-    : Task(name), eventFd_(-1), stat_(STARTING)
+
+InteractiveTask::InteractiveTask(const string &name, const shared_ptr<EventReactor> &spEventReactor)
+    : Task(name), spEventReactor_(spEventReactor)
 {}
 
 InteractiveTask::~InteractiveTask()
@@ -23,20 +24,20 @@ void InteractiveTask::start()
 {
   //设置线程名，方便调试
   assert(__setThreadName(getTaskName()));
-  LOG(INFO) << "Task " << getTaskName() << " started!";
+ // LOG(INFO) << "Task " << getTaskName() << " started!";
   eventFd_ = __createEventFd();
   assert(eventFd_ > 0);
   setStat(RUNNING);
 
   //有事件反应堆
-  if (eventReactor_)
+  if (spEventReactor_)
   {
-    assert(eventReactor_->initReactor());
-    eventReactor_->addEventHandler(eventFd_, EventReactor::EVENT_MESSAGE,
+    assert(spEventReactor_->initReactor());
+    spEventReactor_->addEventHandler(eventFd_, EventReactor::EVENT_MESSAGE,
                                    std::bind(&InteractiveTask::__onMessage, this, _1, _2));
     assert(_onStart());//子类行为
-    assert(__registToMsgCenter()); //向MessageC注册
-    eventReactor_->startEventLoop();
+    assert(__registToMsgCenter()); //向MessageCenter注册
+    spEventReactor_->startEventLoop();
   }
     //无事件反应堆则直接阻塞read
   else
@@ -49,7 +50,7 @@ void InteractiveTask::start()
       read(eventFd_, &eventVal, sizeof(eventVal)); //内部counter会减1
       assert(eventVal == 1);
       shared_ptr<Message> message;
-      if (recvMsgQueue_->syncGet(message))
+      if (recvMsgQueue_.syncGet(message))
       {
         _onMessage(message);
       }
@@ -65,9 +66,9 @@ void InteractiveTask::__stop() //在此释放资源，不在析构是因为可�
   _onStop();//子类行为
   __unregistToMsgCenter();
   assert(__setThreadName(NORMAL_THREAD_NAME));
-  if (eventReactor_)
+  if (spEventReactor_)
   {
-    eventReactor_->destroyReactor();
+    spEventReactor_->destroyReactor();
   }
   if(eventFd_ > 0)
   {
@@ -84,7 +85,7 @@ void InteractiveTask::__onMessage(int fd, short event)
   read(eventFd_, &eventVal, sizeof(eventVal)); //内部counter会减1
   assert(eventVal == 1);
   shared_ptr<Message> message;
-  if (recvMsgQueue_->syncGet(message))
+  if (recvMsgQueue_.syncGet(message))
   {
     _onMessage(message);
   }
@@ -119,7 +120,7 @@ int InteractiveTask::_sendMsgTo(const string &taskName, const shared_ptr<Message
 //线程安全
 int InteractiveTask::notifyMsg(const shared_ptr<Message> &spMessage)
 {
-  recvMsgQueue_->syncPut(spMessage);
+  recvMsgQueue_.syncPut(spMessage);
   unsigned long long eventVal = 1;
   write(eventFd_, &eventVal, sizeof(eventVal)); //内部counter会加1
   return 0;
@@ -137,7 +138,7 @@ void InteractiveTask::setStat(int stat)
 
 void InteractiveTask::_setEventReactor(const shared_ptr<EventReactor> &eventReactor_)
 {
-  InteractiveTask::eventReactor_ = std::move(eventReactor_);
+  InteractiveTask::spEventReactor_ = std::move(eventReactor_);
 }
 
 bool InteractiveTask::__registToMsgCenter()

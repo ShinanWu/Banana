@@ -7,11 +7,11 @@
 
 #include <InteractiveTask.h>
 
-class NetService : public InteractiveTask
+class NetAcceptService : public InteractiveTask
 {
 public:
-  NetService(const string &name);
-  virtual ~NetService();
+  NetAcceptService(const string &name, const shared_ptr<EventReactor> &spEventReactor);
+  virtual ~NetAcceptService();
 
 protected:
   bool _onStart();

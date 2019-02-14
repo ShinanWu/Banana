@@ -24,9 +24,9 @@ class InteractiveTask : public Task, public enable_shared_from_this<InteractiveT
   typedef ConcurrentRingBuffer<shared_ptr<Message>> MsgQueue;
   enum stat{STARTING, RUNNING, STOPPING, STOPPED};
 public:
-  InteractiveTask(const string &name);
+  InteractiveTask(const string &name, const shared_ptr<EventReactor> &spEventReactor = nullptr);
   virtual ~InteractiveTask();
-  void start();
+  void start() final ;
   int notifyMsg(const shared_ptr<Message> &spMessage);
   const int getStat() const;
   void setStat(int stat);
@@ -35,7 +35,7 @@ protected:
   virtual bool _onStart() = 0;
   virtual void _onStop() = 0;
   virtual void _onMessage(const shared_ptr<Message> &spMessage) = 0; //接收Task间消息的处理函数
-  void _setEventReactor(const shared_ptr<EventReactor> &eventReactor_);
+ // void _setEventReactor(const shared_ptr<EventReactor> &eventReactor_);
   int _sendMsgTo(const string &taskName, const shared_ptr<Message> &spMessage);
 
 private:
@@ -48,12 +48,12 @@ private:
  // void __readLoop();
 
 public:
-  std::shared_ptr<EventReactor> eventReactor_;
+  std::shared_ptr<EventReactor> spEventReactor_{nullptr};
 
 private:
-  std::shared_ptr<MsgQueue> recvMsgQueue_;//每个InteractiveTask独占一个消息队列，生命周期和task一致
-  int eventFd_;
-  atomic<int> stat_; //表示状态
+  MsgQueue recvMsgQueue_{50};//每个InteractiveTask独占一个消息队列，生命周期和task一致
+  int eventFd_{-1};
+  atomic<int> stat_{STARTING}; //表示状态
 };
 
 #endif //SERVICEFRAMEWORK_INTERACTIVETASK_H
