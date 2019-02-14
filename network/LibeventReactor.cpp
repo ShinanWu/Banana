@@ -3,7 +3,7 @@
 //
 
 #include "LibeventReactor.h"
-#include "StringStream.h"
+#include "Stream.h"
 #include <logging.h>
 #include <memory>
 #include <stdlib.h>
@@ -50,6 +50,8 @@ void LibeventRector::destroyReactor()
     evconnlistener_free(pListener_);
     pListener_ = nullptr;
   }
+  if(pMessageCallback_){delete pMessageCallback_;}
+  if(pAcceptCallback_){delete pAcceptCallback_;}
   if (eventBundleMap_)
   {
     delete[] eventBundleMap_;
@@ -158,7 +160,7 @@ bool LibeventRector::enableEvent(int fd, short events)
       eventBundleMap_[fd].isWriteEnabled = true;
     }
   }
-  if (events |= EVENT_READ && eventBundleMap_[fd].pReadEvent_)
+  if (events & EVENT_READ && eventBundleMap_[fd].pReadEvent_)
   {
     if (!eventBundleMap_[fd].isReadEnabled)
     {
@@ -204,9 +206,11 @@ bool LibeventRector::removeEventHandler(int fd, short events, const EventReactor
     {
       assert(0);
     }
-    event_free(eventBundleMap_[fd].pReadEvent_);
-    eventBundleMap_[fd].pReadEvent_ = nullptr;
-
+    if(eventBundleMap_[fd].pReadEvent_)
+    {
+      event_free(eventBundleMap_[fd].pReadEvent_);
+      eventBundleMap_[fd].pReadEvent_ = nullptr;
+    }
     if (eventBundleMap_[fd].pReadCallback_)
     {
       delete eventBundleMap_[fd].pReadCallback_;
@@ -220,8 +224,11 @@ bool LibeventRector::removeEventHandler(int fd, short events, const EventReactor
     {
       assert(0);
     }
-    event_free(eventBundleMap_[fd].pWriteEvent_);
-    eventBundleMap_[fd].pWriteEvent_ = nullptr;
+    if(eventBundleMap_[fd].pWriteEvent_)
+    {
+      event_free(eventBundleMap_[fd].pWriteEvent_);
+      eventBundleMap_[fd].pWriteEvent_ = nullptr;
+    }
 
     if (eventBundleMap_[fd].pWriteCallback_)
     {

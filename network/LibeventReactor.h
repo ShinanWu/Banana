@@ -37,10 +37,10 @@ public:
     EventCallback *pReadCallback_ = nullptr;
     ~_EventBundle()
     {
-      if(pWriteEvent_){delete pWriteEvent_; pWriteEvent_ = nullptr;}
-      if(pReadEvent_){delete pReadEvent_; pReadEvent_ = nullptr;}
-      if(pWriteCallback_){delete pWriteCallback_; pWriteCallback_ = nullptr;}
-      if(pReadCallback_){delete pReadCallback_; pReadCallback_ = nullptr;}
+      if(pWriteEvent_){if(pWriteEvent_) event_free(pWriteEvent_); pWriteEvent_ = nullptr;}
+      if(pReadEvent_){if(pReadEvent_) event_free(pReadEvent_); pReadEvent_ = nullptr;}
+      if(pWriteCallback_){if(pWriteCallback_) delete pWriteCallback_; pWriteCallback_ = nullptr;}
+      if(pReadCallback_){if(pReadCallback_) delete pReadCallback_; pReadCallback_ = nullptr;}
     }
   }EventBundle;
 
