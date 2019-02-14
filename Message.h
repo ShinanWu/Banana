@@ -15,7 +15,7 @@ public:
   typedef function<void(bool ret, const Message& retMessage)> MessageCallBack;
 public:
   Message();
-  ~Message();
+  Message(const string &what, const Message::MessageCallBack &messageCallBack);
 
   const string& getWhat() const;
   bool getMsgCallBack(MessageCallBack &msgCallBack) const;

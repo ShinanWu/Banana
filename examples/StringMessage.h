@@ -9,6 +9,7 @@
 class StringMessage : public Message
 {
 public:
+  StringMessage();
   StringMessage(const string &what_, const MessageCallBack &messageCallBack_);
   void setData(const string &data);
   bool getData(string& data) const;
@@ -17,7 +18,7 @@ private:
 };
 
 StringMessage::StringMessage(const string &what, const Message::MessageCallBack &messageCallBack)
-    : Message()
+    : Message(what, messageCallBack)
 {}
 
 bool StringMessage::getData(string& data) const
