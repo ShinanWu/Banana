@@ -3,7 +3,7 @@
 //
 
 #include "Connection.h"
-#include "StringStream.h"
+#include "Stream.h"
 
 Connection::Connection(int fd,
                        struct event *pEvent,

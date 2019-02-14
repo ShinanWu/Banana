@@ -5,13 +5,13 @@
 //非线程安全
 
 #include <unistd.h>
-#include "StringStream.h"
+#include "Stream.h"
 #include "Message.h"
 #include <errno.h>
 #include <logging.h>
 #include <string.h>
 
-StringStream::StringStream(int fd)
+Stream::Stream(int fd)
     : fd_(fd),
       recvLen_(0),
       needRecvLen_(HEADER_LEN),
@@ -24,7 +24,7 @@ StringStream::StringStream(int fd)
 
 }
 
-StreamStat StringStream::recvOnePck()
+StreamStat Stream::recvOnePck()
 {
   if (getRecvStat_() == RECVED)
     return RECVED;
@@ -72,7 +72,7 @@ StreamStat StringStream::recvOnePck()
   }
 }
 
-bool StringStream::getPck(string &recvPck)
+bool Stream::getPck(string &recvPck)
 {
   if (getRecvStat_() == RECVED)
   {
@@ -84,7 +84,7 @@ bool StringStream::getPck(string &recvPck)
   return false;
 }
 
-StreamStat StringStream::sendPck()
+StreamStat Stream::sendPck()
 {
   if(getSendStat_() == SENDED)
   {
@@ -122,7 +122,7 @@ StreamStat StringStream::sendPck()
   }
 }
 
-bool StringStream::setPck(const string &sendPck)
+bool Stream::setPck(const string &sendPck)
 {
   if (getSendStat_() == SENDED)
   {
@@ -136,32 +136,32 @@ bool StringStream::setPck(const string &sendPck)
   return false;
 }
 
-int StringStream::getFd_() const
+int Stream::getFd_() const
 {
   return fd_;
 }
 
-void StringStream::setFd_(int fd_)
+void Stream::setFd_(int fd_)
 {
-  StringStream::fd_ = fd_;
+  Stream::fd_ = fd_;
 }
 
-StreamStat StringStream::getRecvStat_() const
+StreamStat Stream::getRecvStat_() const
 {
   return recvStat_;
 }
 
-void StringStream::setRecvStat_(StreamStat stat_)
+void Stream::setRecvStat_(StreamStat stat_)
 {
-  StringStream::recvStat_ = stat_;
+  Stream::recvStat_ = stat_;
 }
-StreamStat StringStream::getSendStat_() const
+StreamStat Stream::getSendStat_() const
 {
   return sendStat_;
 }
-void StringStream::setSendStat_(StreamStat sendStat_)
+void Stream::setSendStat_(StreamStat sendStat_)
 {
-  StringStream::sendStat_ = sendStat_;
+  Stream::sendStat_ = sendStat_;
 }
 
 

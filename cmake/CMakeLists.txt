@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.4)
-project(SeviceFramework)
+project(ServiceFramework)
 add_definitions(-g -lpthread -std=c++11)
 
 #set(CMAKE_CXX_STANDARD 11)
@@ -13,4 +13,4 @@ link_directories(../../libevent/build/lib)
 link_libraries(libglog.a -ldl -lpthread)
 link_libraries(libevent.a)
 
-add_executable(SeviceFramework ${SRC} ../Task.h ../InteractiveTask.cpp ../IndependentTask.cpp ../ConcurrentHashMap.h ../examples/NetService.cpp ../examples/NetService.h ../network/LibeventReactor.cpp ../network/LibeventReactor.h ../network/StringStream.cpp ../network/StringStream.h ../network/EventReactor.cpp ../network/EventReactor.h ../network/Connection.cpp ../network/Connection.h ../network/StreamParser.h ../network/SelectEventReactor.cpp ../network/SelectEventReactor.h ../examples/StringMessage.h ../network/TcpServer.cpp ../network/TcpServer.h ../examples/StorageServer.cpp ../examples/StorageService.cpp ../examples/StorageService.h ../examples/StorageMessage.h)
+add_executable(ServiceFramework ${SRC} ../Task.h ../InteractiveTask.cpp ../IndependentTask.cpp ../ConcurrentHashMap.h ../examples/NetAcceptService.cpp ../examples/NetAcceptService.h ../network/LibeventReactor.cpp ../network/LibeventReactor.h ../network/Stream.cpp ../network/Stream.h ../network/EventReactor.cpp ../network/EventReactor.h ../network/Connection.cpp ../network/Connection.h ../network/StreamParser.h ../network/SelectEventReactor.cpp ../network/SelectEventReactor.h ../examples/StringMessage.h ../network/TcpServer.cpp ../network/TcpServer.h ../examples/StorageServer.cpp ../examples/StorageService.cpp ../examples/StorageService.h ../examples/StorageMessage.h ../examples/NetWorkerService.cpp ../examples/NetWorkerService.h)

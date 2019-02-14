@@ -5,7 +5,7 @@
 #ifndef SEVICEFRAMEWORK_CONNECTION_H
 #define SEVICEFRAMEWORK_CONNECTION_H
 #include <memory>
-#include <network/StringStream.h>
+#include <network/Stream.h>
 //#include "Stream.h"
 #include "network/EventReactor.h"
 
@@ -22,12 +22,12 @@ public:
   void onClose();
 private:
   struct event *pEvent_;
-  StringStream stringStream_;
+  Stream stringStream_;
   SpEventReactor spEventReactor_;
 
 public:
   struct event *getPEvent_() const;
-  const StringStream &getStream_() const;
+  const Stream &getStream_() const;
 };
 
 #endif //SEVICEFRAMEWORK_CONNECTION_H

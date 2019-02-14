@@ -15,15 +15,15 @@ typedef enum
 }StreamStat;
 using namespace std;
 
-class StringStream
+class Stream
 {
 #define HEADER_LEN 4
 #define DEFAULT_BUFF_LEN (1024) //1k
 #define RECV_BUFF_MAX_SIZE (1024 * 1024 * 500) //500M
 #define SEND_BUFF_MAX_SIZE (1024 * 1024 * 100) //100M 均需根据实际业务作调整，比如即时通信客户端多，buffer小，取较小合适值即可
  public:
-  StringStream(int fd);
-  ~StringStream();
+  Stream(int fd);
+  ~Stream();
   StreamStat recvOnePck();
   bool getPck(string &recvPck);
   bool setPck(const string &sendPck);
