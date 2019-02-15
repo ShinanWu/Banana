@@ -22,17 +22,17 @@ NetAcceptService::NetAcceptService(const string &name, const shared_ptr<EventRea
 NetAcceptService::~NetAcceptService()
 {}
 
-bool NetAcceptService::_onStart()
+void NetAcceptService::onStart()
 {
   LOG(INFO) << "NetAcceptService " << getTaskName() << " started!";
 }
 
-void NetAcceptService::_onStop()
+void NetAcceptService::onStop()
 {
   LOG(INFO) << "NetAcceptService " << getTaskName() << " stopped!";
 }
 
-void NetAcceptService::_onMessage(const shared_ptr<Message> &spMessage)
+void NetAcceptService::onMessage(const shared_ptr<Message> &spMessage)
 {
   LOG(INFO) << "msg comes, what: " << spMessage->getWhat();
 }

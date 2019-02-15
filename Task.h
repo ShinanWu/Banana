@@ -14,20 +14,11 @@ using namespace std;
 class Task
 {
 public:
-  Task(const string &name):taskName_(name)
-  {
-  //  DLOG(INFO) << "Task " << name << " created!";
-  }
-  virtual ~Task()
-  {
-   // LOG(INFO) << "Task " << taskName_ << " destroyed!";
-  }
+  Task(const string &name):taskName_(name) {}
+  virtual ~Task() {}
   virtual void start() = 0;
+  const string &getTaskName() const { return taskName_; }
 
-  const string &getTaskName() const
-  {
-    return taskName_;
-  }
 private:
   const string taskName_;
 };

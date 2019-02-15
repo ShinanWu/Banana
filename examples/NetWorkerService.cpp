@@ -13,17 +13,17 @@ NetWorkerService::~NetWorkerService()
 
 }
 
-bool NetWorkerService::_onStart()
-{
-  return false;
-}
-
-void NetWorkerService::_onStop()
+void NetWorkerService::onStart()
 {
 
 }
 
-void NetWorkerService::_onMessage(const shared_ptr<Message> &spMessage)
+void NetWorkerService::onStop()
+{
+
+}
+
+void NetWorkerService::onMessage(const shared_ptr<Message> &spMessage)
 {
 
 }

@@ -13,12 +13,10 @@ public:
   NetAcceptService(const string &name, const shared_ptr<EventReactor> &spEventReactor);
   virtual ~NetAcceptService();
 
-protected:
-  bool _onStart();
-  void _onStop();
-  void _onMessage(const shared_ptr<Message> &spMessage);
-
 private:
+  void onStart();
+  void onStop();
+  void onMessage(const shared_ptr<Message> &spMessage);
   void __onAccept(int fd);
 };
 

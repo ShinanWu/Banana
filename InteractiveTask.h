@@ -30,13 +30,13 @@ public:
   int notifyMsg(const shared_ptr<Message> &spMessage);
   const int getStat() const;
   void setStat(int stat);
+  const shared_ptr<EventReactor> &getSpEventReactor() const;
 
 protected:
-  virtual bool _onStart() = 0;
-  virtual void _onStop() = 0;
-  virtual void _onMessage(const shared_ptr<Message> &spMessage) = 0; //接收Task间消息的处理函数
- // void _setEventReactor(const shared_ptr<EventReactor> &eventReactor_);
-  int _sendMsgTo(const string &taskName, const shared_ptr<Message> &spMessage);
+  int sendMsgTo(const string &taskName, const shared_ptr<Message> &spMessage);
+  virtual void onStart() = 0;
+  virtual void onStop() = 0;
+  virtual void onMessage(const shared_ptr<Message> &spMessage) = 0; //接收Task间消息的处理函数
 
 private:
   void __stop();
@@ -45,9 +45,9 @@ private:
   int __createEventFd();
   bool __registToMsgCenter();
   void __unregistToMsgCenter();
- // void __readLoop();
 
-public:
+
+protected:
   std::shared_ptr<EventReactor> spEventReactor_{nullptr};
 
 private:

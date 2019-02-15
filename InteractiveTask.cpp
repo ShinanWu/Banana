@@ -12,7 +12,6 @@
 
 using namespace std::placeholders;
 
-
 InteractiveTask::InteractiveTask(const string &name, const shared_ptr<EventReactor> &spEventReactor)
     : Task(name), spEventReactor_(spEventReactor)
 {}
@@ -24,7 +23,7 @@ void InteractiveTask::start()
 {
   //设置线程名，方便调试
   assert(__setThreadName(getTaskName()));
- // LOG(INFO) << "Task " << getTaskName() << " started!";
+  // LOG(INFO) << "Task " << getTaskName() << " started!";
   eventFd_ = __createEventFd();
   assert(eventFd_ > 0);
   setStat(RUNNING);
@@ -33,16 +32,16 @@ void InteractiveTask::start()
   if (spEventReactor_)
   {
     assert(spEventReactor_->initReactor());
-    spEventReactor_->addEventHandler(eventFd_, EventReactor::EVENT_MESSAGE,
-                                   std::bind(&InteractiveTask::__onMessage, this, _1, _2));
-    assert(_onStart());//子类行为
+    spEventReactor_->addEventHandler(eventFd_, EventReactor::EVENT_READ,
+                                     std::bind(&InteractiveTask::__onMessage, this, _1, _2));
+    onStart();//子类行为
     assert(__registToMsgCenter()); //向MessageCenter注册
     spEventReactor_->startEventLoop();
   }
     //无事件反应堆则直接阻塞read
   else
   {
-    assert(_onStart());//子类行为
+    onStart();//子类行为
     assert(__registToMsgCenter());
     unsigned long long eventVal;
     while (getStat() == RUNNING)
@@ -52,7 +51,7 @@ void InteractiveTask::start()
       shared_ptr<Message> message;
       if (recvMsgQueue_.syncGet(message))
       {
-        _onMessage(message);
+        onMessage(message);
       }
     }
   }
@@ -63,14 +62,14 @@ void InteractiveTask::start()
 
 void InteractiveTask::__stop() //在此释放资源，不在析构是因为可能智能指针在buffer不能及时释放
 {
-  _onStop();//子类行为
+  onStop();//子类行为
   __unregistToMsgCenter();
   assert(__setThreadName(NORMAL_THREAD_NAME));
   if (spEventReactor_)
   {
     spEventReactor_->destroyReactor();
   }
-  if(eventFd_ > 0)
+  if (eventFd_ > 0)
   {
     close(eventFd_);
     eventFd_ = -1;
@@ -87,8 +86,10 @@ void InteractiveTask::__onMessage(int fd, short event)
   shared_ptr<Message> message;
   if (recvMsgQueue_.syncGet(message))
   {
-    _onMessage(message);
+    onMessage(message);
   }
+  spEventReactor_->addEventHandler(eventFd_, EventReactor::EVENT_READ,
+                                   std::bind(&InteractiveTask::__onMessage, this, _1, _2));
 }
 
 bool InteractiveTask::__setThreadName(const string &name)
@@ -113,10 +114,11 @@ int InteractiveTask::__createEventFd()
   return evtfd;
 }
 
-int InteractiveTask::_sendMsgTo(const string &taskName, const shared_ptr<Message> &spMessage)
+int InteractiveTask::sendMsgTo(const string &taskName, const shared_ptr<Message> &spMessage)
 {
   return MessageCenter::Instance()->syncSendMsgTo(taskName, spMessage);
 }
+
 //线程安全
 int InteractiveTask::notifyMsg(const shared_ptr<Message> &spMessage)
 {
@@ -136,14 +138,14 @@ void InteractiveTask::setStat(int stat)
   stat_.store(stat, memory_order_relaxed);
 }
 
-void InteractiveTask::_setEventReactor(const shared_ptr<EventReactor> &eventReactor_)
-{
-  InteractiveTask::spEventReactor_ = std::move(eventReactor_);
-}
+//void InteractiveTask::_setEventReactor(const shared_ptr<EventReactor> &eventReactor_)
+//{
+//  InteractiveTask::spEventReactor_ = std::move(eventReactor_);
+//}
 
 bool InteractiveTask::__registToMsgCenter()
 {
-  if(!MessageCenter::Instance()->registerTask(getTaskName(), shared_from_this()))
+  if (!MessageCenter::Instance()->registerTask(getTaskName(), shared_from_this()))
   {
     LOG(ERROR) << "Task " << getTaskName() << " already exist!";
     return false;
@@ -154,6 +156,11 @@ bool InteractiveTask::__registToMsgCenter()
 void InteractiveTask::__unregistToMsgCenter()
 {
   MessageCenter::Instance()->unregisterTask(getTaskName());
+}
+
+const shared_ptr<EventReactor> &InteractiveTask::getSpEventReactor() const
+{
+  return spEventReactor_;
 }
 
 

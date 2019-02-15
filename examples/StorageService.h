@@ -13,10 +13,10 @@ public:
   StorageService();
   StorageService(const string &name);
   virtual ~StorageService();
-protected:
-  virtual bool _onStart();
-  virtual void _onStop();
-  virtual void _onMessage(const shared_ptr<Message> &spMessage);
+private:
+  virtual void onStart();
+  virtual void onStop();
+  virtual void onMessage(const shared_ptr<Message> &spMessage);
 };
 
 #endif //SEVICEFRAMEWORK_STORAGESERVICE_H
