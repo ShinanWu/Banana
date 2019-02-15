@@ -29,18 +29,14 @@ public:
 #define MAX_FD_NUM 50000 //默认最多5W连接
   typedef struct _EventBundle //事件相关数据
   {
-    bool isWriteEnabled = false;
-    bool isReadEnabled = false;
     struct event *pWriteEvent_ = nullptr;
     struct event *pReadEvent_ = nullptr;
-    EventCallback *pWriteCallback_ = nullptr;
-    EventCallback *pReadCallback_ = nullptr;
+    EventCallback writeCallback_ = nullptr;
+    EventCallback readCallback_ = nullptr;
     ~_EventBundle()
     {
       if(pWriteEvent_){if(pWriteEvent_) event_free(pWriteEvent_); pWriteEvent_ = nullptr;}
       if(pReadEvent_){if(pReadEvent_) event_free(pReadEvent_); pReadEvent_ = nullptr;}
-      if(pWriteCallback_){if(pWriteCallback_) delete pWriteCallback_; pWriteCallback_ = nullptr;}
-      if(pReadCallback_){if(pReadCallback_) delete pReadCallback_; pReadCallback_ = nullptr;}
     }
   }EventBundle;
 
@@ -50,28 +46,27 @@ public:
   virtual bool initReactor(int maxFds = MAX_FD_NUM);
   virtual void destroyReactor();
   virtual bool bindPort(unsigned short port);
-  virtual bool addEventHandler(int fd, short event, const EventCallback &cb);
+  virtual bool addEventHandler(int fd, short events, const EventCallback &cb);
   virtual bool enableEvent(int fd, short events);
   virtual bool disableEvent(int fd, short events);
-  virtual bool removeEventHandler(int fd, short event, const EventCallback &cb);
+  virtual bool removeEventHandler(int fd, short events);
   virtual void startEventLoop();
 
 private:
   struct event_base *pBase_;
   struct evconnlistener *pListener_;
   struct sockaddr_in sin_;
-  EventCallback *pAcceptCallback_;
-  EventCallback *pMessageCallback_;
-  struct event *pMessageEvent_;
-  EventBundle* eventBundleMap_;
+  EventBundle* pEventBundleMap_;
+  EventCallback* pAcceptCallback_;
+
 
 private:
   static void __onAccept(struct evconnlistener *listener,
                          evutil_socket_t fd,
                          struct sockaddr *addr,
                          int len,
-                         void *pCallback);
-  static void __onEvent(evutil_socket_t fd, short event, void *pCallback);
+                         void *pAcceptCallback);
+  static void __onEvent(evutil_socket_t fd, short event, void *pEventBundleMap);
 };
 
 #endif //SEVICEFRAMEWORK_LIBEVENTOBJ_H
