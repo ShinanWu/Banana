@@ -15,24 +15,27 @@
 
 #define TASK_QUEUE_MAX_SIZE 1000
 
-class ThreadPool {
+class ThreadPool
+{
 
 private:
-    int threadNum_;
-    std::vector<std::thread> vecThreads;
-    ConcurrentRingBuffer<std::shared_ptr<Task>> taskQueue_;
+  int threadNum_;
+  std::vector<std::thread> vecThreads;
+  ConcurrentRingBuffer<std::shared_ptr<Task>> taskQueue_;
 
 public:
-    explicit ThreadPool(int threadNum, int taskQueueSize=TASK_QUEUE_MAX_SIZE);
-    ~ThreadPool();
-    void syncPostTask(const std::shared_ptr<Task> &task);
-    bool asyncPostTask(const std::shared_ptr<Task> &task);
-    void start();
+  static ThreadPool *getInstance();
+  ~ThreadPool();
+  void syncPostTask(const std::shared_ptr<Task> &task); //线程安全
+  bool asyncPostTask(const std::shared_ptr<Task> &task);
+  void start();
 private:
-    ThreadPool();
-    bool __syncGetOneTask(std::shared_ptr<Task> &task);
-    void threadEntry();
+  static ThreadPool *initInstance(int threadNum, int taskQueueSize = TASK_QUEUE_MAX_SIZE);
+  static ThreadPool *pInstance_;
+  friend int main(); //只能在主函数做线程池的初始化
+  explicit ThreadPool(int threadNum, int taskQueueSize = TASK_QUEUE_MAX_SIZE);
+  bool __syncGetOneTask(std::shared_ptr<Task> &task);
+  void threadEntry();
 };
-
 
 #endif //SEVICEFRAMEWORK_THREADPOOL_H

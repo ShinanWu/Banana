@@ -8,16 +8,25 @@
 #include <assert.h>
 using namespace std;
 
+ThreadPool* ThreadPool::pInstance_= nullptr;
+
+ThreadPool *ThreadPool::initInstance(int threadNum, int taskQueueSize)
+{
+  pInstance_ = new ThreadPool(threadNum, taskQueueSize);
+  return pInstance_;
+}
+
+ThreadPool *ThreadPool::getInstance()
+{
+  return pInstance_;
+}
+
 ThreadPool::ThreadPool(int threadNum, int taskQueueSize)
     : threadNum_(threadNum), taskQueue_(taskQueueSize)
-{
-
-}
+{}
 
 ThreadPool::~ThreadPool()
-{
-
-}
+{}
 
 void ThreadPool::start()
 {
@@ -57,4 +66,6 @@ void ThreadPool::threadEntry()
   assert(spTask);
   spTask->start();
 }
+
+
 
