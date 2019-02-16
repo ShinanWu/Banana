@@ -8,8 +8,9 @@
 #include <memory>
 #include <vector>
 #include <logging.h>
-#include "LibeventReactor.h"
-#include "ThreadPool.h"
+#include "NetAcceptService.h"
+#include "NetWorkService.h"
+#include "Stream.h"
 
 #define MAX_CLIENTS 50000 //限制最大连接数
 using namespace std;
@@ -17,18 +18,26 @@ using namespace std;
 class TcpServer
 {
 public:
-  TcpServer(int eventReactorNum, int threadPoolNum, unsigned short listenPort);
+  explicit TcpServer(int netWorkServiceNum, unsigned short listenPort, int threadPoolNum = 0);
   ~TcpServer();
   void start();
+
+protected:
+  virtual void onConnection(const Stream &stream) = 0;
+
 private:
-  bool _initEventReactors(int reactorNum);
-  bool _initThreadPool(int threadNum);
-private:
-  int eventReactorNum_;
-  vector<shared_ptr<EventReactor>> vecSpReactor_;
-  shared_ptr<ThreadPool> spThreadPool_;
+  int netWorkServiceNum_;
+  int curServiceIndex_ = 0;
   int threadPoolNum_;
   unsigned short listenPort_;
+  unique_ptr<NetAcceptService> upNetAcceptService_;
+  vector<shared_ptr<NetWorkService>> vecSpNetWorkService_;
+
+private:
+  bool _startThreadPool();
+  bool _startNetAcceptService();
+  bool _startNetWorkService();
+  int _nextServiceIndex();
 };
 
 #endif //SEVICEFRAMEWORK_TCPSERVER_H

@@ -3,39 +3,66 @@
 //
 #include <assert.h>
 #include "TcpServer.h"
-TcpServer::TcpServer(int eventReactorNum, int threadPoolNum, unsigned short listenPort)
-    : eventReactorNum_(eventReactorNum),
+#include "LibeventReactor.h"
+#include "MessageCenter.h"
+#include "ThreadPool.h"
+
+TcpServer::TcpServer(int netWorkServiceNum, unsigned short listenPort, int threadPoolNum)
+    : netWorkServiceNum_(netWorkServiceNum),
       threadPoolNum_(threadPoolNum),
       listenPort_(listenPort)
 {}
+
 TcpServer::~TcpServer()
 {}
+
 void TcpServer::start()
 {
-  _initThreadPool(threadPoolNum_);
-  _initEventReactors(eventReactorNum_);
-
+  _startThreadPool();
+  _startNetWorkService();
+  _startNetAcceptService();
 }
-bool TcpServer::_initEventReactors(int reactorNum)
+
+bool TcpServer::_startThreadPool()
 {
-  assert(reactorNum > 0 && reactorNum < threadPoolNum_);
-  vector<shared_ptr<EventReactor>> vecSpReactor(reactorNum);
-  for (auto &spReactor : vecSpReactor)
-  {
-    spReactor.reset(new LibeventRector());
-    if (!spReactor->initReactor(MAX_CLIENTS / (reactorNum - 1))) //减去一条accept线程
-    {
-      LOG(ERROR) << "onStart LibeventRector failed!";
-      return false;
-    }
-  }
-  LOG(INFO) << "onStart Reactors success! num:" << reactorNum;
+  assert(threadPoolNum_ >= 0);
+  int allNum = threadPoolNum_ + netWorkServiceNum_;
+  ThreadPool::initInstance(allNum, 1000);
   return true;
-
 }
-bool TcpServer::_initThreadPool(int threadNum)
+
+int TcpServer::_nextServiceIndex()
 {
-  assert(threadNum > 0); //线程池数目应该大于0
-  spThreadPool_.reset(new ThreadPool(threadNum));
-  return false;
+  if (curServiceIndex_ == netWorkServiceNum_)
+  { curServiceIndex_ = 0; }
+  curServiceIndex_++;
+  return curServiceIndex_;
+}
+
+bool TcpServer::_startNetAcceptService()
+{
+  shared_ptr<EventReactor> spReactor(new LibeventRector);
+  upNetAcceptService_.reset(new NetAcceptService("AcceptService", spReactor));
+
+  //等待worker线程准备完毕再开始accept，否则可能起初的连接失败
+  for (auto it : vecSpNetWorkService_)
+  {
+    weak_ptr<NetWorkService> wpNetWorkService;
+    MessageCenter::Instance()->waitGetTaskRef(it->getTaskName(), wpNetWorkService);
+  }
+  upNetAcceptService_->start();
+  return true;
+}
+
+bool TcpServer::_startNetWorkService()
+{
+  stringstream ss;
+  for (int i = 0; i < netWorkServiceNum_; i++)
+  {
+    ss.str("");
+    ss << "WorkService-" << i;
+    shared_ptr<EventReactor> spReactor(new LibeventRector);
+    vecSpNetWorkService_.emplace_back(shared_ptr<NetWorkService>(new NetWorkService(ss.str(), spReactor)));
+    ThreadPool::getInstance()->syncPostTask(vecSpNetWorkService_[i]);
+  }
 }
