@@ -34,15 +34,19 @@ void InteractiveTask::start()
     assert(spEventReactor_->initReactor());
     spEventReactor_->addEventHandler(eventFd_, EventReactor::EVENT_READ,
                                      std::bind(&InteractiveTask::__onMessage, this, _1, _2));
-    onStart();//子类行为
     assert(__registToMsgCenter()); //向MessageCenter注册
+    onStart();//子类行为
+
+    //start Loop
     spEventReactor_->startEventLoop();
   }
     //无事件反应堆则直接阻塞read
   else
   {
-    onStart();//子类行为
     assert(__registToMsgCenter());
+    onStart();//子类行为
+
+    //start Loop
     unsigned long long eventVal;
     while (getStat() == RUNNING)
     {
