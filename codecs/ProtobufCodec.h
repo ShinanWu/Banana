@@ -1,0 +1,13 @@
+//
+// Created by Shinan on 2019/2/16.
+//
+
+#ifndef SERVICEFRAMEWORK_PROTOBUFCODEC_H
+#define SERVICEFRAMEWORK_PROTOBUFCODEC_H
+
+class ProtobufCodec
+{
+
+};
+
+#endif //SERVICEFRAMEWORK_PROTOBUFCODEC_H
