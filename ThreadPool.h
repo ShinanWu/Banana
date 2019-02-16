@@ -17,7 +17,8 @@
 
 class ThreadPool
 {
-
+  //只有TcpServer可以初始化线程池
+  friend class TcpServer;
 private:
   int threadNum_;
   std::vector<std::thread> vecThreads;
