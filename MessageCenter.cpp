@@ -73,3 +73,8 @@ bool MessageCenter::getTaskRef(const string &receTask, weak_ptr<InteractiveTask>
   }
   return true;
 }
+
+void MessageCenter::waitGetTaskRef(const string &receTask, weak_ptr<InteractiveTask> &wpTask)
+{
+  taskMap_.waitFind(receTask, wpTask);
+}
