@@ -26,7 +26,6 @@ using namespace std;
 class LibeventRector : public EventReactor
 {
 public:
-#define MAX_FD_NUM 50000 //默认最多5W连接
   typedef struct _EventBundle //事件相关数据
   {
     struct event *pWriteEvent_ = nullptr;
@@ -43,7 +42,7 @@ public:
   LibeventRector();
   ~LibeventRector();
 public:
-  virtual bool initReactor(int maxFds = MAX_FD_NUM);
+  virtual bool initReactor(int maxFds);
   virtual void destroyReactor();
   virtual bool bindPort(unsigned short port);
   virtual bool addEventHandler(int fd, short events, const EventCallback &cb);
@@ -53,11 +52,11 @@ public:
   virtual void startEventLoop();
 
 private:
-  struct event_base *pBase_;
-  struct evconnlistener *pListener_;
+  struct event_base *pBase_ = nullptr;
+  struct evconnlistener *pListener_ = nullptr;
   struct sockaddr_in sin_;
-  EventBundle* pEventBundleMap_;
-  EventCallback* pAcceptCallback_;
+  EventBundle* pEventBundleMap_= nullptr ;
+  EventCallback* pAcceptCallback_= nullptr;
 
 
 private:

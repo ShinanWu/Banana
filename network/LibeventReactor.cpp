@@ -12,9 +12,7 @@
 #define BACKLOG -1
 
 LibeventRector::LibeventRector()
-{
-
-}
+{}
 
 LibeventRector::~LibeventRector()
 {
@@ -25,13 +23,13 @@ bool LibeventRector::initReactor(int maxFds)
 {
   assert(maxFds > 0);
   pBase_ = event_base_new();
-  if (pBase_ == nullptr)
+  if (!pBase_)
   {
     LOG(ERROR) << "create event base failed!";
     return false;
   }
   pEventBundleMap_ = new EventBundle[maxFds]();
-  if (pEventBundleMap_ == nullptr)
+  if (!pEventBundleMap_)
   {
     return false;
   }
@@ -109,11 +107,6 @@ bool LibeventRector::addEventHandler(int fd, short events, const EventReactor::E
       return false;
     }
     pEventBundleMap_[fd].writeCallback_ = std::move(cb);
-  }
-  else
-  {
-    assert(0);
-    return false;
   }
   return true;
 }

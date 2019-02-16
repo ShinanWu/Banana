@@ -23,7 +23,7 @@ void InteractiveTask::start()
 {
   //设置线程名，方便调试
   assert(__setThreadName(getTaskName()));
-  // LOG(INFO) << "Task " << getTaskName() << " started!";
+  LOG(INFO) << "Task " << getTaskName() << " started!";
   eventFd_ = __createEventFd();
   assert(eventFd_ > 0);
   setStat(RUNNING);
@@ -38,6 +38,7 @@ void InteractiveTask::start()
     onStart();//子类行为
 
     //start Loop
+    LOG(INFO) << "start loop!";
     spEventReactor_->startEventLoop();
   }
     //无事件反应堆则直接阻塞read

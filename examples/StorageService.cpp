@@ -16,23 +16,23 @@ StorageService::~StorageService()
 void StorageService::onStart()
 {
  // LOG(INFO) << "Task " << getTaskName() << " stared!";
-  if(getTaskName() == "Service-2")
+  if(getTaskName() == "Service-1")
   {
   //  sleep(3);
  //   LOG(INFO) << "send msg to StorageService-2";
-    sendMsgTo("Service-1", shared_ptr<Message>(new StringMessage(getTaskName(), nullptr)));
+    sendMsgTo("Service-9", shared_ptr<Message>(new StringMessage(getTaskName(), nullptr)));
   }
-  if(getTaskName() == "Service-9")
+  if(getTaskName() == "Service-1")
   {
    // sleep(3);
     //   LOG(INFO) << "send msg to StorageService-2";
-    sendMsgTo("Service-1", shared_ptr<Message>(new StringMessage(getTaskName(), nullptr)));
+    sendMsgTo("Service-40", shared_ptr<Message>(new StringMessage(getTaskName(), nullptr)));
   }
-  if(getTaskName() == "Service-20")
+  if(getTaskName() == "Service-2")
   {
   //  sleep(3);
     //   LOG(INFO) << "send msg to StorageService-2";
-    sendMsgTo("Service-2", shared_ptr<Message>(new StringMessage(getTaskName(), nullptr)));
+    sendMsgTo("Service-38", shared_ptr<Message>(new StringMessage(getTaskName(), nullptr)));
   }
   if(getTaskName() == "Service-39")
   {
@@ -40,7 +40,6 @@ void StorageService::onStart()
     //   LOG(INFO) << "send msg to StorageService-2";
     sendMsgTo("Service-2", shared_ptr<Message>(new StringMessage(getTaskName(), nullptr)));
   }
-  return true;
 }
 
 void StorageService::onStop()

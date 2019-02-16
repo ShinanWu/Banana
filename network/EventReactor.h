@@ -8,7 +8,7 @@
 #include <memory>
 //#include "Connection.h"
 #include "Task.h"
-
+#define DEFAULT_MAX_CLIENTS 50000
 using namespace std;
 
 //事件发生器基类
@@ -25,7 +25,7 @@ public:
   typedef std::function<void(int fd, short event)> EventCallback;
 
 public:
-  virtual bool initReactor(int maxFds = 1)=0;
+  virtual bool initReactor(int maxFds=DEFAULT_MAX_CLIENTS)=0;
   virtual void destroyReactor()=0;
   virtual bool bindPort(unsigned short port)=0;
   virtual bool addEventHandler(int fd, short events, const EventCallback& cb)=0;
