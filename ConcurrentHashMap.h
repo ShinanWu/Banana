@@ -13,39 +13,61 @@
 #define DEFAULT_HASHLOCKS 499 //选择质数
 using namespace std;
 
-template <class K, class V, size_t HASHLOCKS=DEFAULT_HASHLOCKS>
-class ConcurrentHashMap{
+template<class K, class V, size_t HASHLOCKS = DEFAULT_HASHLOCKS>
+class ConcurrentHashMap
+{
 public:
-    bool find(K k, V& v) {
-        size_t bucketIdx = hasher_(k) % HASHLOCKS;
-        unique_lock<mutex> lck(mtx_[bucketIdx]); //减少锁的碰撞
-        auto it = map_[bucketIdx].find(k);
-        if(it != map_[bucketIdx].end()){
-            v = it->second;
-            return true;
-        }
-        return false;
+  bool find(K k, V &v)
+  {
+    size_t bucketIdx = hasher_(k) % HASHLOCKS;
+    unique_lock<mutex> lck(mtx_[bucketIdx]); //减少锁的碰撞
+    auto it = map_[bucketIdx].find(k);
+    if (it != map_[bucketIdx].end())
+    {
+      v = it->second;
+      return true;
     }
+    return false;
+  }
 
-    bool insert(K k, const V& v) {
-        size_t bucketIdx = hasher_(k) % HASHLOCKS;
-        unique_lock<mutex> lck(mtx_[bucketIdx]);
-        auto pairKV = map_[bucketIdx].insert(make_pair(k, v));
-        if(pairKV.second == true){
-            return true;
-        }
-        return false;
+  void waitFind(K k, V &v)
+  {
+    size_t bucketIdx = hasher_(k) % HASHLOCKS;
+    unique_lock<mutex> lck(mtx_[bucketIdx]);
+    auto it = map_[bucketIdx].find(k);
+    while(it == map_[bucketIdx].end())
+    {
+      condElement_[bucketIdx].wait(lck);
+      it = map_[bucketIdx].find(k);
     }
-    void erase(K k){
-        size_t bucketIdx = hasher_(k) % HASHLOCKS;
-        unique_lock<mutex> lck(mtx_[bucketIdx]);
-        map_[bucketIdx].erase(k);
+    v = it->second;
+  }
+
+  bool insert(K k, const V &v)
+  {
+    size_t bucketIdx = hasher_(k) % HASHLOCKS;
+    unique_lock<mutex> lck(mtx_[bucketIdx]);
+    auto pairKV = map_[bucketIdx].insert(make_pair(k, v));
+    if (pairKV.second == true)
+    {
+      condElement_[bucketIdx].notify_one();
+      return true;
     }
+    return false;
+  }
+
+  void erase(K k)
+  {
+    size_t bucketIdx = hasher_(k) % HASHLOCKS;
+    unique_lock<mutex> lck(mtx_[bucketIdx]);
+    map_[bucketIdx].erase(k);
+  }
 
 private:
-    mutex mtx_[HASHLOCKS];
-    unordered_map<K, V> map_[HASHLOCKS];
-    hash<K> hasher_;
+  mutex mtx_[HASHLOCKS];
+  condition_variable condElement_[HASHLOCKS];
+  unordered_map<K, V> map_[HASHLOCKS];
+  hash<K> hasher_;
 
 };
 
