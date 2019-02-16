@@ -14,9 +14,9 @@ public:
   virtual ~NetAcceptService();
 
 private:
-  void onStart();
-  void onStop();
-  void onMessage(const shared_ptr<Message> &spMessage);
+  void onStart() final ;
+  void onStop() final ;
+  void onMessage(const shared_ptr<Message> &spMessage) final ;
   void __onAccept(int fd);
 };
 

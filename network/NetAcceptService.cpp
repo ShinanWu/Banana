@@ -11,19 +11,27 @@
 #include <logging.h>
 #include <assert.h>
 #include "NetAcceptService.h"
-#include "../network/LibeventReactor.h"
+#include "LibeventReactor.h"
 
 #define MAX_CLIENTS_ACCEPT 50000
+using namespace std;
+using namespace std::placeholders;
 
 NetAcceptService::NetAcceptService(const string &name, const shared_ptr<EventReactor> &spEventReactor)
     : InteractiveTask(name, spEventReactor)
-{}
+{
+  assert(spEventReactor);
+}
 
 NetAcceptService::~NetAcceptService()
 {}
 
 void NetAcceptService::onStart()
 {
+  spEventReactor_->bindPort(10086);
+  spEventReactor_->addEventHandler(NULL,
+                                   EventReactor::EVENT_ACCEPT,
+                                   std::bind(&NetAcceptService::__onAccept, this, _1));
   LOG(INFO) << "NetAcceptService " << getTaskName() << " started!";
 }
 
