@@ -5,12 +5,8 @@
 #include "Message.h"
 #include <assert.h>
 
-Message::Message()
-{}
-
 Message::Message(const string &what, const Message::MessageCallBack &messageCallBack)
-    : what_(what), messageCallBack_(messageCallBack)
-{}
+    : what_(what), messageCallBack_(messageCallBack) {}
 
 const string &Message::getWhat() const
 {

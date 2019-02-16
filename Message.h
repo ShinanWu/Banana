@@ -12,10 +12,9 @@ using namespace std;
 class Message
 {
 public:
-  typedef function<void(bool ret, const Message& retMessage)> MessageCallBack;
+  typedef function<void(const Message& retMessage)> MessageCallBack;
 public:
-  Message();
-  Message(const string &what, const Message::MessageCallBack &messageCallBack);
+  Message(const string &what = "UNKNOWN", const Message::MessageCallBack &messageCallBack = nullptr);
 
   const string& getWhat() const;
   bool getMsgCallBack(MessageCallBack &msgCallBack) const;
