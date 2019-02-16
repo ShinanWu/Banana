@@ -3,6 +3,7 @@
 //线程安全单例模式，通过MessageCenter很容易进行task间通信，
 // 如果频繁通信一定要getTaskRef()拿到目标对象直接notify。
 
+//to-do 拓展观察者和消费者模式，可以订阅某个消息，map放的是消息ID和function列表
 #include <mutex>
 #include <logging.h>
 #include <assert.h>
@@ -40,12 +41,12 @@ void MessageCenter::unregisterTask(const string &taskName)
 int MessageCenter::syncSendMsgTo(const string &receTask, const shared_ptr<Message> &spMessage)
 {
   weak_ptr<InteractiveTask> wpTask;
-  if (!taskMap_.find(receTask, wpTask))
-  {
-    LOG(ERROR) << "Task " << receTask << " not registered!";
-    return RECEIVER_NOT_EXIST; //未注册
-  }
-
+//  if (!taskMap_.find(receTask, wpTask))
+//  {
+//    LOG(ERROR) << "Task " << receTask << " not registered!";
+//    return RECEIVER_NOT_EXIST; //未注册
+//  }
+  taskMap_.waitFind(receTask, wpTask);
   auto spTask = wpTask.lock(); //线程安全的类型提升
   if (spTask == nullptr)
   {
