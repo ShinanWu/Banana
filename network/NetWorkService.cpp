@@ -5,7 +5,7 @@
 #include "NetWorkService.h"
 #include "NewConnectMessage.h"
 
-NetWorkService::NetWorkService(const string &name, const shared_ptr<EventReactor> &spEventReactor)
+NetWorkService::NetWorkService(const string &name, const SpEventReactor &spEventReactor)
     : InteractiveTask(name, spEventReactor)
 {}
 
@@ -27,12 +27,12 @@ void NetWorkService::onMessage(const shared_ptr<Message> &spMessage)
   if (spMessage->getWhat() == "NEW_CONNECT")
   {
     auto spNewConnectMsg = dynamic_pointer_cast<NewConnectMessage>(spMessage);
-    shared_ptr<Stream> spStream(new Stream(spNewConnectMsg->getClientFd()));
+    SpStream spStream(new Stream(spNewConnectMsg->getClientFd(), spEventReactor_));
     if(newConnectionCb_){newConnectionCb_(spStream);}
   }
 }
 
-void NetWorkService::setNewConnectionCallback(NetWorkService::ConnectionCallback &cb)
+void NetWorkService::setNewConnectionCallback(const NetWorkService::ConnectionCallback &cb)
 {
-  newConnectionCb_ = std::move(cb);
+  newConnectionCb_ = cb;
 }
