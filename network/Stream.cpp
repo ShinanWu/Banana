@@ -126,7 +126,7 @@ void Stream::_sendOnePack(int fd, short event)
     spEventReactor_->addEventHandler(fd_, EventReactor::EVENT_WRITE, sendOnePackCall_);
     return;
   }
-  //发送完毕
+    //发送完毕
   else
   {
     sendStat_ = SENDED;
@@ -193,6 +193,11 @@ void Stream::asyncSendBytes(const vector<char> &vecBytes, Stream::SendCompleteCa
   sendBuf_ = vecBytes;
   sendCompleteCallback_ = sendCompleteCallback;
   spEventReactor_->addEventHandler(fd_, EventReactor::EVENT_WRITE, sendOnePackCall_);
+}
+
+const SpEventReactor &Stream::getSpEventReactor_() const
+{
+  return spEventReactor_;
 }
 
 

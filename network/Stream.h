@@ -1,6 +1,7 @@
 //
 // Created by Shinan on 2019/1/23.
-//
+//每个fd由stream封装，读写数据只需注册回调函数即可
+//用法可看example
 
 #ifndef SEVICEFRAMEWORK_CLIENT_H
 #define SEVICEFRAMEWORK_CLIENT_H
@@ -40,6 +41,7 @@ public:
   int getFd_() const;
   int getRecvStat_() const;
   int getSendStat_() const;
+  const SpEventReactor &getSpEventReactor_() const;
 
 private:
   void _recvOnePack(int fd, short event);
@@ -62,6 +64,7 @@ private:
   SendCompleteCallback sendCompleteCallback_;
   SpEventReactor spEventReactor_;
 };
+typedef shared_ptr<Stream> SpStream;
 
 #endif //SEVICEFRAMEWORK_CLIENT_H
 
