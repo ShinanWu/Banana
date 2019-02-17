@@ -12,22 +12,9 @@
 class Connection
 {
 public:
-  Connection(int fd,
-             struct event *pEvent,
-             const SpEventReactor &spEventReactor);
-  ~Connection();
-  void onRead();
-  void onWrite();
-  void onMessage(const string &message);
-  void onClose();
-private:
-  struct event *pEvent_;
-  Stream stringStream_;
-  SpEventReactor spEventReactor_;
-
-public:
-  struct event *getPEvent_() const;
-  const Stream &getStream_() const;
+  virtual ~Connection();
+  Connection();
 };
 
 #endif //SEVICEFRAMEWORK_CONNECTION_H
+

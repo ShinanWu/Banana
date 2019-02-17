@@ -53,7 +53,7 @@ public:
 private:
   TaskMap taskMap_;
   static mutex mtx_;
-  static atomic<MessageCenter*> pMessageCenter_;//？？？
+  static atomic<MessageCenter*> pMessageCenter_;
 };
 
 #endif //SEVICEFRAMEWORK_MESSAGECENTER_H

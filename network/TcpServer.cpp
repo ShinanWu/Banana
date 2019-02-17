@@ -31,14 +31,6 @@ bool TcpServer::_startThreadPool()
   return true;
 }
 
-int TcpServer::_nextServiceIndex()
-{
-  if (curServiceIndex_ == netWorkServiceNum_)
-  { curServiceIndex_ = 0; }
-  curServiceIndex_++;
-  return curServiceIndex_;
-}
-
 bool TcpServer::_startNetAcceptService()
 {
   shared_ptr<EventReactor> spReactor(new LibeventRector);

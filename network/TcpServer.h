@@ -27,7 +27,6 @@ protected:
 
 private:
   int netWorkServiceNum_;
-  int curServiceIndex_ = 0;
   int threadPoolNum_;
   unsigned short listenPort_;
   unique_ptr<NetAcceptService> upNetAcceptService_;
@@ -37,7 +36,6 @@ private:
   bool _startThreadPool();
   bool _startNetAcceptService();
   bool _startNetWorkService();
-  int _nextServiceIndex();
 };
 
 #endif //SEVICEFRAMEWORK_TCPSERVER_H
