@@ -39,7 +39,7 @@ bool TcpServer::_startNetAcceptService()
   //等待worker线程准备完毕再开始accept，否则可能起初的连接失败
   for (auto it : vecSpNetWorkService_)
   {
-    weak_ptr<NetWorkService> wpNetWorkService;
+    weak_ptr<InteractiveTask> wpNetWorkService;
     MessageCenter::Instance()->waitGetTaskRef(it->getTaskName(), wpNetWorkService);
   }
   upNetAcceptService_->start();
