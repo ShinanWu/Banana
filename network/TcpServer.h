@@ -23,13 +23,13 @@ public:
   void start();
 
 protected:
-  virtual void onConnection(const Stream &stream) = 0;
+  virtual void onConnection(const SpStream& spStream) = 0;
 
 private:
   int netWorkServiceNum_;
   int threadPoolNum_;
   unsigned short listenPort_;
-  unique_ptr<NetAcceptService> upNetAcceptService_;
+  shared_ptr<NetAcceptService> spNetAcceptService_;
   vector<shared_ptr<NetWorkService>> vecSpNetWorkService_;
 
 private:
