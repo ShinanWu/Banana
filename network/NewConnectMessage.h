@@ -11,6 +11,7 @@ class NewConnectMessage : public Message
 {
 public:
   NewConnectMessage(int clientFd) :Message("NEW_CONNECT"),clientFd_(clientFd){}
+  virtual ~NewConnectMessage(){}
   int getClientFd(){return clientFd_;}
 private:
   int clientFd_;

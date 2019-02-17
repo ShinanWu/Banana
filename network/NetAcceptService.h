@@ -11,9 +11,8 @@
 class NetAcceptService : public InteractiveTask
 {
 public:
-  NetAcceptService(const string &name, const shared_ptr<EventReactor> &spEventReactor);
+  NetAcceptService(const string &name, const SpEventReactor &spEventReactor);
   virtual ~NetAcceptService();
-  void addNetWorkService(const shared_ptr<NetWorkService>& spWorkService);
 
 private:
   void onStart() final ;
@@ -21,8 +20,10 @@ private:
   void onMessage(const shared_ptr<Message> &spMessage) final ;
   void __onAccept(int fd);
 
-private:
+public:
   vector<shared_ptr<NetWorkService>> vecSpWorkService_;
+
+private:
   int curServiceIndex_ = 0;
   int _nextServiceIndex();
 };

@@ -12,11 +12,11 @@ using namespace std;
 
 class NetWorkService : public InteractiveTask
 {
-  typedef function<void(shared_ptr<Stream>)> ConnectionCallback;
+  typedef function<void(const SpStream& spStream)> ConnectionCallback;
 public:
-  NetWorkService(const string &name, const shared_ptr<EventReactor> &spEventReactor);
+  NetWorkService(const string &name, const SpEventReactor &spEventReactor);
   virtual ~NetWorkService();
-  void setNewConnectionCallback(ConnectionCallback &cb);
+  void setNewConnectionCallback(const ConnectionCallback &cb);
 
 private:
   virtual void onStart() final;
