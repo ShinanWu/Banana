@@ -19,7 +19,7 @@
 using namespace std;
 using namespace std::placeholders;
 
-NetAcceptService::NetAcceptService(const string &name, const shared_ptr<EventReactor> &spEventReactor)
+NetAcceptService::NetAcceptService(const string &name, const SpEventReactor &spEventReactor)
     : InteractiveTask(name, spEventReactor)
 {
   assert(spEventReactor);
@@ -30,7 +30,6 @@ NetAcceptService::~NetAcceptService()
 
 void NetAcceptService::onStart()
 {
-  spEventReactor_->bindPort(10086);
   spEventReactor_->addEventHandler(NULL,
                                    EventReactor::EVENT_ACCEPT,
                                    std::bind(&NetAcceptService::__onAccept, this, _1));
@@ -55,16 +54,11 @@ void NetAcceptService::__onAccept(int fd)
   LOG(INFO) << "one client connected! fd: " << fd;
 }
 
-void NetAcceptService::addNetWorkService(const shared_ptr<NetWorkService>& spWorkService)
-{
-  vecSpWorkService_.emplace_back(spWorkService);
-}
-
 int NetAcceptService::_nextServiceIndex()
 {
+  curServiceIndex_++;
   if (curServiceIndex_ == vecSpWorkService_.size())
   { curServiceIndex_ = 0; }
-  curServiceIndex_++;
   return curServiceIndex_;
 }
 
