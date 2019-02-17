@@ -6,7 +6,11 @@
 #include <assert.h>
 
 Message::Message(const string &what, const Message::MessageCallBack &messageCallBack)
-    : what_(what), messageCallBack_(messageCallBack) {}
+    : what_(what), messageCallBack_(messageCallBack)
+{}
+
+Message::~Message()
+{}
 
 const string &Message::getWhat() const
 {
@@ -28,3 +32,5 @@ void Message::setMessageCallBack(const MessageCallBack &messageCallBack)
 {
   messageCallBack_ = std::move(messageCallBack);
 }
+
+

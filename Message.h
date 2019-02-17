@@ -12,11 +12,11 @@ using namespace std;
 class Message
 {
 public:
-  typedef function<void(const Message& retMessage)> MessageCallBack;
+  typedef function<void(const Message &retMessage)> MessageCallBack;
 public:
-  Message(const string &what = "UNKNOWN", const Message::MessageCallBack &messageCallBack = nullptr);
-
-  const string& getWhat() const;
+  explicit Message(const string &what = "UNKNOWN", const Message::MessageCallBack &messageCallBack = nullptr);
+  virtual ~Message();
+  const string &getWhat() const;
   bool getMsgCallBack(MessageCallBack &msgCallBack) const;
   void setWhat(const string &what_);
   void setMessageCallBack(const MessageCallBack &messageCallBack_);
