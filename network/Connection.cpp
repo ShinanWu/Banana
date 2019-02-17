@@ -5,10 +5,17 @@
 #include "Connection.h"
 #include "Stream.h"
 
-Connection::Connection()
-{}
-
-Connection::~Connection()
+Connection::Connection(const SpStream &spStream):spStream_(spStream)
 {
 
 }
+
+Connection::~Connection()
+{}
+
+void Connection::destroy()
+{
+  delete this;
+}
+
+

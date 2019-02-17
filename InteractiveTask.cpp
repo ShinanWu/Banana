@@ -12,7 +12,7 @@
 
 using namespace std::placeholders;
 
-InteractiveTask::InteractiveTask(const string &name, const shared_ptr<EventReactor> &spEventReactor)
+InteractiveTask::InteractiveTask(const string &name, const SpEventReactor &spEventReactor)
     : Task(name), spEventReactor_(spEventReactor)
 {}
 
@@ -143,7 +143,7 @@ void InteractiveTask::setStat(int stat)
   stat_.store(stat, memory_order_relaxed);
 }
 
-//void InteractiveTask::_setEventReactor(const shared_ptr<EventReactor> &eventReactor_)
+//void InteractiveTask::_setEventReactor(const SpEventReactor &eventReactor_)
 //{
 //  InteractiveTask::spEventReactor_ = std::move(eventReactor_);
 //}
@@ -163,7 +163,7 @@ void InteractiveTask::__unregistToMsgCenter()
   MessageCenter::Instance()->unregisterTask(getTaskName());
 }
 
-const shared_ptr<EventReactor> &InteractiveTask::getSpEventReactor() const
+const SpEventReactor &InteractiveTask::getSpEventReactor() const
 {
   return spEventReactor_;
 }

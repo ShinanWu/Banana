@@ -6,14 +6,20 @@
 #define SEVICEFRAMEWORK_CONNECTION_H
 #include <memory>
 #include <network/Stream.h>
-//#include "Stream.h"
+#include "Stream.h"
 #include "network/EventReactor.h"
 
 class Connection
 {
 public:
+  Connection(const SpStream& spStream);
+  void destroy();
+
+private:
   virtual ~Connection();
-  Connection();
+
+private:
+  SpStream spStream_;
 };
 
 #endif //SEVICEFRAMEWORK_CONNECTION_H

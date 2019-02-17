@@ -2,7 +2,9 @@
 // Created by Shinan on 2019/1/18.
 //
 //可以相互通信的task的基类，子类只需要实现onMessage函数做消息处理，
-//实现onStart,onStop管理生命周期
+//accept向worker发送连接即是此方式。
+//实现onStart,onStop管理生命周期。
+//注意继承此基类不能用unique_ptr
 //
 #ifndef SERVICEFRAMEWORK_INTERACTIVETASK_H
 #define SERVICEFRAMEWORK_INTERACTIVETASK_H
@@ -24,13 +26,13 @@ class InteractiveTask : public Task, public enable_shared_from_this<InteractiveT
   typedef ConcurrentRingBuffer<shared_ptr<Message>> MsgQueue;
   enum stat{STARTING, RUNNING, STOPPING, STOPPED};
 public:
-  InteractiveTask(const string &name, const shared_ptr<EventReactor> &spEventReactor = nullptr);
+  InteractiveTask(const string &name, const SpEventReactor &spEventReactor = nullptr);
   virtual ~InteractiveTask();
   void start() final ;
   int notifyMsg(const shared_ptr<Message> &spMessage);
   const int getStat() const;
   void setStat(int stat);
-  const shared_ptr<EventReactor> &getSpEventReactor() const;
+  const SpEventReactor &getSpEventReactor() const;
 
 protected:
   int sendMsgTo(const string &taskName, const shared_ptr<Message> &spMessage);
@@ -48,7 +50,7 @@ private:
 
 
 protected:
-  std::shared_ptr<EventReactor> spEventReactor_{nullptr};
+  SpEventReactor spEventReactor_{nullptr};
 
 private:
   MsgQueue recvMsgQueue_{50};//每个InteractiveTask独占一个消息队列，生命周期和task一致
