@@ -10,8 +10,10 @@
 #include <arpa/inet.h>
 #include <logging.h>
 #include <assert.h>
+#include <memory>
 #include "NetAcceptService.h"
 #include "LibeventReactor.h"
+#include "NewConnectMessage.h"
 
 #define MAX_CLIENTS_ACCEPT 50000
 using namespace std;
@@ -47,7 +49,23 @@ void NetAcceptService::onMessage(const shared_ptr<Message> &spMessage)
 
 void NetAcceptService::__onAccept(int fd)
 {
+  //Round-Robin向每个worker发送
+  auto spMessage = std::make_shared<NewConnectMessage>(fd);
+  vecSpWorkService_[_nextServiceIndex()]->notifyMsg(spMessage);
   LOG(INFO) << "one client connected! fd: " << fd;
+}
+
+void NetAcceptService::addNetWorkService(const shared_ptr<NetWorkService>& spWorkService)
+{
+  vecSpWorkService_.emplace_back(spWorkService);
+}
+
+int NetAcceptService::_nextServiceIndex()
+{
+  if (curServiceIndex_ == vecSpWorkService_.size())
+  { curServiceIndex_ = 0; }
+  curServiceIndex_++;
+  return curServiceIndex_;
 }
 
 
