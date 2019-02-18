@@ -10,11 +10,12 @@
 #include <unistd.h>
 #include <signal.h>
 #include <assert.h>
-#include "ThreadPool.h"
+#include "multi-threading/ThreadPool.h"
 #include "StorageService.h"
 #include <network/LibeventReactor.h>
 #include "network/NetAcceptService.h"
 #include "network/NetWorkService.h"
+#include "examples/MapReduceServer/MapReduceConnection.h"
 
 #define REACTOR_NUM 4 //根据CPU数目来，一般可设为CPU数目相当
 #define THREAD_POOL_NUM 16 //根据测试进行调整，值不要太大
@@ -26,23 +27,22 @@ class StorageServer : public TcpServer
 {
 public:
   StorageServer(int eventReactorNum, unsigned short listenPort, int threadPoolNum)
-      :TcpServer(eventReactorNum, listenPort, threadPoolNum) {}
+      : TcpServer(eventReactorNum, listenPort, threadPoolNum)
+  {}
 
 private:
-  virtual void onConnection(const SpStream &spStream)
+  void onConnection(const SpStream &spStream, const SpNetWorkService &spNetWorkService)
   {
     LOG(INFO) << "new connection!";
-  }
-
-  void onRecvOnePack(int retStat, const vector<char> &vecBytes)
-  {
-
+    auto spConnection = make_shared<MapReduceConnection>(spStream, spNetWorkService);
+    assert(spNetWorkService->addNewConnection(spConnection));
+    spConnection->startReadOrWriteInService();
   }
 };
 
 int initLogging()
 {
-  google::InitGoogleLogging("ServiceFramework.log"); //初始化glog库
+  google::InitGoogleLogging("StorageServer.log"); //初始化glog库
   FLAGS_stderrthreshold = google::INFO;     //
   mkdir("log", 0755);
   FLAGS_log_dir = "./log";

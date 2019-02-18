@@ -12,15 +12,17 @@
 #include <sys/socket.h>
 #include <assert.h>
 #include "Stream.h"
-#include "Message.h"
+#include "multi-threading/Message.h"
 
 using namespace std::placeholders;
 
 Stream::Stream(int fd, const SpEventReactor &spEventReactor)
     : fd_(fd),
-      spEventReactor_(spEventReactor)
+      spEventReactor_(spEventReactor),
+      recvBuf_(DEFAULT_BUFF_LEN),
+      sendBuf_(DEFAULT_BUFF_LEN)
 {
-  //构造函数谨慎使用this
+  //构造函数谨慎使用this,尤其是不能使用shared_from_this,会崩溃
   recvOnePackCall_ = std::bind(&Stream::_recvOnePack, this, _1, _2);
   sendOnePackCall_ = std::bind(&Stream::_sendOnePack, this, _1, _2);
 }
@@ -147,7 +149,7 @@ void Stream::_sendOnePack(int fd, short event)
 //  return false;
 //}
 
-int Stream::getFd_() const
+int Stream::getFd() const
 {
   return fd_;
 }
@@ -162,12 +164,12 @@ int Stream::getSendStat_() const
   return sendStat_;
 }
 
-void Stream::setOnCloseCallback_(SocketCloseCallback &closeCallback)
+void Stream::setOnCloseCallback_(const SocketCloseCallback &closeCallback)
 {
   closeCallback_ = std::move(closeCallback); //一般只设一次
 }
 
-void Stream::asyncRecvBytes(int num, RecvCompleteCallback &recvCompleteCallback)
+void Stream::asyncRecvBytes(int num, const RecvCompleteCallback &recvCompleteCallback)
 {
   if (!recvCompleteCallback || num > DEFAULT_BUFF_LEN || num <= 0)
   {
@@ -180,7 +182,7 @@ void Stream::asyncRecvBytes(int num, RecvCompleteCallback &recvCompleteCallback)
   spEventReactor_->addEventHandler(fd_, EventReactor::EVENT_READ, recvOnePackCall_);
 }
 
-void Stream::asyncSendBytes(const vector<char> &vecBytes, Stream::SendCompleteCallback &sendCompleteCallback)
+void Stream::asyncSendBytes(const vector<char> &vecBytes, const SendCompleteCallback &sendCompleteCallback)
 {
   int sendSize = vecBytes.size();
   if (!sendCompleteCallback || sendSize > DEFAULT_BUFF_LEN)

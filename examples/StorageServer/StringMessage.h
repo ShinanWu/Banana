@@ -4,7 +4,7 @@
 
 #ifndef SEVICEFRAMEWORK_STRINGMESSAGE_H
 #define SEVICEFRAMEWORK_STRINGMESSAGE_H
-#include "Message.h"
+#include "multi-threading/Message.h"
 
 class StringMessage : public Message
 {

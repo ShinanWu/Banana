@@ -5,7 +5,7 @@
 #ifndef SEVICEFRAMEWORK_STORAGEMESSAGE_H
 #define SEVICEFRAMEWORK_STORAGEMESSAGE_H
 
-#include "Message.h"
+#include "multi-threading/Message.h"
 #include <string>
 using namespace std;
 

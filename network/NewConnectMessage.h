@@ -5,14 +5,20 @@
 #ifndef SERVICEFRAMEWORK_NEWCONNECTMESSAGE_H
 #define SERVICEFRAMEWORK_NEWCONNECTMESSAGE_H
 
-#include "Message.h"
+#include "multi-threading/Message.h"
 
 class NewConnectMessage : public Message
 {
 public:
-  NewConnectMessage(int clientFd) :Message("NEW_CONNECT"),clientFd_(clientFd){}
-  virtual ~NewConnectMessage(){}
-  int getClientFd(){return clientFd_;}
+  NewConnectMessage(int clientFd) : Message("NEW_CONNECT"), clientFd_(clientFd)
+  {}
+
+  virtual ~NewConnectMessage()
+  {}
+
+  int getClientFd()
+  { return clientFd_; }
+
 private:
   int clientFd_;
 };

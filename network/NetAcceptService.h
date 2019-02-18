@@ -5,7 +5,7 @@
 #ifndef SEVICEFRAMEWORK_NETSERVICE_H
 #define SEVICEFRAMEWORK_NETSERVICE_H
 
-#include <InteractiveTask.h>
+#include <multi-threading/InteractiveTask.h>
 #include "NetWorkService.h"
 
 class NetAcceptService : public InteractiveTask

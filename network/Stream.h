@@ -10,10 +10,18 @@
 #include <string>
 #include <memory>
 #include <functional>
-#include "Message.h"
+#include "multi-threading/Message.h"
 #include "EventReactor.h"
 
 using namespace std;
+
+typedef function<void(int fd)> SocketCloseCallback;
+typedef function<void(int retRecvStat, const vector<char> &vecBytes)> RecvCompleteCallback;
+typedef function<void(int retSendStat)> SendCompleteCallback;
+enum _StreamStat
+{
+  RECVING, RECVED, RECVERR, SENDING, SENDED, SENDERR, CLOSED //流状态
+};
 
 class Stream
 {
@@ -21,24 +29,15 @@ class Stream
 #define DEFAULT_BUFF_LEN (1024) //1k
 #define RECV_BUFF_MAX_SIZE (1024 * 1024 * 500) //500M
 #define SEND_BUFF_MAX_SIZE (1024 * 1024 * 100) //100M 均需根据实际业务作调整，比如即时通信客户端多，buffer小，取较小合适值即可
-  typedef function<void(int fd)> SocketCloseCallback;
-  typedef function<void(int retRecvStat, const vector<char> &vecBytes)> RecvCompleteCallback;
-  typedef function<void(int retSendStat)> SendCompleteCallback;
-  enum _StreamStat
-  {
-    RECVING, RECVED, RECVERR, SENDING, SENDED, SENDERR, CLOSED //流状态
-  };
 
 public:
   Stream(int fd, const SpEventReactor &spEventReactor);
   virtual ~Stream();
-  void asyncRecvBytes(int num, RecvCompleteCallback &recvCompleteCallback);
-  void asyncSendBytes(const vector<char> &vecBytes, SendCompleteCallback &sendCompleteCallback);
-  void setOnCloseCallback_(SocketCloseCallback &onCloseCallback_);
+  void asyncRecvBytes(int num, const RecvCompleteCallback &recvCompleteCallback);
+  void asyncSendBytes(const vector<char> &vecBytes, const SendCompleteCallback &sendCompleteCallback);
+  void setOnCloseCallback_(const SocketCloseCallback &onCloseCallback_);
 
-  bool getPck(string &recvPck);
-  bool setPck(const string &sendPck);
-  int getFd_() const;
+  int getFd() const;
   int getRecvStat_() const;
   int getSendStat_() const;
   const SpEventReactor &getSpEventReactor_() const;
@@ -55,7 +54,7 @@ private:
   int needSendLen_ = 0;
   int recvStat_ = RECVED;
   int sendStat_ = SENDED;
-  vector<char> recvBuf_; //接收信息的buffer
+  vector<char> recvBuf_ ; //接收信息的buffer
   vector<char> sendBuf_; //发送的buffer
   function<void(int fd, short event)> recvOnePackCall_;
   function<void(int fd, short event)> sendOnePackCall_;

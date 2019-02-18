@@ -5,7 +5,7 @@
 #ifndef SEVICEFRAMEWORK_STORAGESERVICE_H
 #define SEVICEFRAMEWORK_STORAGESERVICE_H
 
-#include "InteractiveTask.h"
+#include "multi-threading/InteractiveTask.h"
 
 class StorageService : public InteractiveTask
 {

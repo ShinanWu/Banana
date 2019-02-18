@@ -33,7 +33,6 @@ public:
 private:
   static ThreadPool *initInstance(int threadNum, int taskQueueSize = TASK_QUEUE_MAX_SIZE);
   static ThreadPool *pInstance_;
-  friend int main(); //只能在主函数做线程池的初始化
   explicit ThreadPool(int threadNum, int taskQueueSize = TASK_QUEUE_MAX_SIZE);
   bool __syncGetOneTask(std::shared_ptr<Task> &task);
   void threadEntry();
