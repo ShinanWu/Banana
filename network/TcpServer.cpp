@@ -4,8 +4,8 @@
 #include <assert.h>
 #include "TcpServer.h"
 #include "LibeventReactor.h"
-#include "MessageCenter.h"
-#include "ThreadPool.h"
+#include "multi-threading/MessageCenter.h"
+#include "multi-threading/ThreadPool.h"
 #include <functional>
 using namespace std::placeholders;
 
@@ -58,7 +58,7 @@ bool TcpServer::_startNetWorkService()
     ss << "WorkService-" << i;
     SpEventReactor spReactor(new LibeventRector);
     shared_ptr<NetWorkService> spService(new NetWorkService(ss.str(), spReactor));
-    spService->setNewConnectionCallback(std::bind(&TcpServer::onConnection, this, _1));
+    spService->setNewConnectionCallback(std::bind(&TcpServer::onConnection, this, _1, _2));
     vecSpNetWorkService_.emplace_back(spService);
     ThreadPool::getInstance()->syncPostTask(vecSpNetWorkService_[i]);
   }

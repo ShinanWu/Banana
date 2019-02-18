@@ -5,18 +5,26 @@
 #ifndef SERVICEFRAMEWORK_NETWORKERSERVICE_H
 #define SERVICEFRAMEWORK_NETWORKERSERVICE_H
 
+
 #include <functional>
-#include <InteractiveTask.h>
+#include <multi-threading/InteractiveTask.h>
+#include <unordered_map>
 #include "Stream.h"
+class Connection;
+typedef std::shared_ptr<Connection> SpConnection;
+#include "Connection.h"
 using namespace std;
 
 class NetWorkService : public InteractiveTask
 {
-  typedef function<void(const SpStream& spStream)> ConnectionCallback;
+  typedef function<void(const SpStream&, const shared_ptr<NetWorkService>&)> ConnectionCallback;
 public:
   NetWorkService(const string &name, const SpEventReactor &spEventReactor);
   virtual ~NetWorkService();
   void setNewConnectionCallback(const ConnectionCallback &cb);
+  bool addNewConnection(const SpConnection& spConnection);
+  void removeConnection(int handle);
+
 
 private:
   virtual void onStart() final;
@@ -25,6 +33,8 @@ private:
 
 private:
   ConnectionCallback newConnectionCb_;
+  unordered_map<int, SpConnection> connectionMap_;
 };
+typedef shared_ptr<NetWorkService> SpNetWorkService;
 
 #endif //SERVICEFRAMEWORK_NETWORKERSERVICE_H
