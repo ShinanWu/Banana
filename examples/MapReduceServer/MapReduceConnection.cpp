@@ -3,6 +3,7 @@
 //
 
 #include "MapReduceConnection.h"
+#include "MapDoneConnectionMessage.h"
 
 using namespace std::placeholders;
 
@@ -27,7 +28,7 @@ void MapReduceConnection::onMessage(const SpConnectionMessage &spConnectionMessa
 
 void MapReduceConnection::recvCompleteCallback(int retRecvStat, const vector<char> &vecBytes)
 {
-  LOG(INFO) << "retRecvStat" << string(vecBytes.begin(), vecBytes.end());
+   string(vecBytes.begin(), vecBytes.end());
 }
 
 void MapReduceConnection::sendCompleteCallback(int retSendStat)
@@ -40,4 +41,11 @@ void MapReduceConnection::_destroy()
   recvCompleteCallback_ = nullptr; //释放自己的引用，防止内存泄漏
   sendCompleteCallback_ = nullptr;
   Connection::destroy();
+}
+
+void MapReduceConnection::mapFunction(const string &filePath)
+{
+  //do disk IO
+  auto spMsg = make_shared<MapDoneConnectionMessage>(getHandle(), )
+  spNetWorkService_->notifyMsg(spMsg);
 }

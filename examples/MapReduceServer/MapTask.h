@@ -8,6 +8,17 @@
 #endif //SERVICEFRAMEWORK_MAPTASK_H
 #include "multi-threading/IndependentTask.h"
 
+template<class Ret, class Ele>
+vector<Ret> map(function<Ret(Ele)> fun, vector<Ele> vec)
+{
+  vector<Ret> vecRet;
+  for (auto it : vec)
+  {
+    vecRet.emplace_back(fun(it));
+  }
+  return vecRet;
+}
+
 class MapTask : public IndependentTask
 {
   typedef function<void()> RunCallback;
