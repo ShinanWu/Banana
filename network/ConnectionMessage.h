@@ -11,12 +11,11 @@
 class ConnectionMessage : public Message
 {
 public:
-  ConnectionMessage() : Message("CONNECTION")
+  ConnectionMessage(int handle) : Message("CONNECTION"), handle_(handle)
   {}
+
   int getHandle()
-  {
-    return 0;
-  }
+  { return handle_; }
 
 private:
   int handle_;
