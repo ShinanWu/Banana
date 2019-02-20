@@ -21,9 +21,9 @@ vector<Ret> map(function<Ret(Ele)> fun, vector<Ele> vec)
 
 class MapTask : public IndependentTask
 {
-  typedef function<void()> RunCallback;
+  typedef function<void(void)> RunCallback;
 public:
-  MapTask(const RunCallback &runCallback_) : runCallback_(runCallback_)
+  MapTask(const RunCallback &runCallback) : IndependentTask(""), runCallback_(runCallback)
   {}
 
   virtual void run()

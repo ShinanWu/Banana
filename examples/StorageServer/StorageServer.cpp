@@ -15,7 +15,6 @@
 #include <network/LibeventReactor.h>
 #include "network/NetAcceptService.h"
 #include "network/NetWorkService.h"
-#include "examples/MapReduceServer/MapReduceConnection.h"
 
 #define REACTOR_NUM 4 //根据CPU数目来，一般可设为CPU数目相当
 #define THREAD_POOL_NUM 16 //根据测试进行调整，值不要太大
@@ -34,9 +33,9 @@ private:
   void onConnection(const SpStream &spStream, const SpNetWorkService &spNetWorkService)
   {
     LOG(INFO) << "new connection!";
-    auto spConnection = make_shared<MapReduceConnection>(spStream, spNetWorkService);
-    assert(spNetWorkService->addNewConnection(spConnection));
-    spConnection->startReadOrWriteInService();
+//    auto spConnection = make_shared<MapReduceConnection>(spStream, spNetWorkService);
+//    assert(spNetWorkService->addNewConnection(spConnection));
+//    spConnection->startReadOrWriteInService();
   }
 };
 

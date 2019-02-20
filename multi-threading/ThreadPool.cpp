@@ -61,10 +61,13 @@ bool ThreadPool::__syncGetOneTask(std::shared_ptr<Task> &task)
 
 void ThreadPool::threadEntry()
 {
-  shared_ptr<Task> spTask;
-  __syncGetOneTask(spTask);
-  assert(spTask);
-  spTask->start();
+  while (true)
+  {
+    shared_ptr<Task> spTask;
+    __syncGetOneTask(spTask);
+    assert(spTask);
+    spTask->start();
+  }
 }
 
 

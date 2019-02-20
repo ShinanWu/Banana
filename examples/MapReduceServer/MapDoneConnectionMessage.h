@@ -9,7 +9,7 @@
 class MapDoneConnectionMessage : public ConnectionMessage
 {
 public:
-  MapDoneConnectionMessage::MapDoneConnectionMessage(int handle, int maxNum)
+  MapDoneConnectionMessage(int handle, int maxNum)
       : ConnectionMessage(handle), maxNum_(maxNum)
   {}
 

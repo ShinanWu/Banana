@@ -110,13 +110,13 @@ bool InteractiveTask::__setThreadName(const string &name)
 int InteractiveTask::__createEventFd()
 {
   //不用设置非阻塞，因为信号量性质，有事件通知一定有事件，不会阻塞。没事件也不会来读
-  int evtfd = eventfd(0, EFD_CLOEXEC | EFD_SEMAPHORE);
-  if (evtfd < 0)
+  int eventFd = eventfd(0, EFD_CLOEXEC | EFD_SEMAPHORE);
+  if (eventFd < 0)
   {
-    LOG(ERROR) << "Failed in eventfd";
+    LOG(ERROR) << "create eventFd failed!";
     assert(0);
   }
-  return evtfd;
+  return eventFd;
 }
 
 int InteractiveTask::sendMsgTo(const string &taskName, const shared_ptr<Message> &spMessage)

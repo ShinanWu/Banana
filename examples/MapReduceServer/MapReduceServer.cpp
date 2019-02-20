@@ -5,7 +5,6 @@
 //从10个文件里找到最大的数并返回给客户端
 
 #include <memory>
-#include <network/TcpServer.h>
 #include <iostream>
 #include <logging.h>
 #include <sys/stat.h>
@@ -13,14 +12,15 @@
 #include <unistd.h>
 #include <signal.h>
 #include <assert.h>
+#include "MapReduceConnection.h"
+#include "network/TcpServer.h"
 #include "multi-threading/ThreadPool.h"
-#include <network/LibeventReactor.h>
+#include "network/LibeventReactor.h"
 #include "network/NetAcceptService.h"
 #include "network/NetWorkService.h"
-#include "MapReduceConnection.h"
 
 #define REACTOR_NUM 4 //根据CPU数目来，一般可设为CPU数目相当
-#define THREAD_POOL_NUM 16 //根据测试进行调整，值不要太大
+#define THREAD_POOL_NUM 20 //根据测试进行调整，值不要太大
 #define LISTEN_PORT 10087
 
 using namespace std;
