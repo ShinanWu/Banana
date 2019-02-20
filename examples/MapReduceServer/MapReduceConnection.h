@@ -9,6 +9,7 @@
 
 class MapReduceConnection : public Connection, public enable_shared_from_this<MapReduceConnection>
 {
+  enum {RECV_HEAD, RECV_BODY};
 public:
   MapReduceConnection(const SpStream &spStream, const SpNetWorkService &spNetWorkService);
   virtual ~MapReduceConnection();
@@ -19,9 +20,17 @@ private:
   void recvCompleteCallback(int retRecvStat, const vector<char> &vecBytes);
   void sendCompleteCallback(int retSendStat);
   void mapFunction(const string &filePath);
+  int reduce(int last, int cur);
   void _destroy();
 
 private:
+  bool firstCome_ = true;
+  int taskCount_ = 0;
+  size_t curMaxNum_ = 0;
+  int stat_ = RECV_HEAD;
+  std::chrono::system_clock::time_point begin_;
+  std::chrono::system_clock::time_point end_;
+
   RecvCompleteCallback recvCompleteCallback_;
   SendCompleteCallback sendCompleteCallback_;
 };
