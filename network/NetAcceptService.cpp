@@ -30,7 +30,7 @@ NetAcceptService::~NetAcceptService()
 
 void NetAcceptService::onStart()
 {
-  spEventReactor_->addEventHandler(NULL,
+  spEventReactor_->addEventHandler(0,
                                    EventReactor::EVENT_ACCEPT,
                                    std::bind(&NetAcceptService::__onAccept, this, _1));
   LOG(INFO) << "NetAcceptService " << getTaskName() << " started!";
