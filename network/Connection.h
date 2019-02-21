@@ -10,23 +10,25 @@
 #include "ConnectionMessage.h"
 //前向声明
 class NetWorkService;
+typedef weak_ptr<NetWorkService> WpNetWorkService;
 typedef shared_ptr<NetWorkService> SpNetWorkService;
 #include "NetWorkService.h"
 
 class Connection
 {
 public:
-  Connection(const SpStream &spStream, const SpNetWorkService &spNetWorkService);
+  Connection(const SpStream &spStream, const WpNetWorkService &wpNetWorkService);
   virtual ~Connection();
 
   virtual void startReadOrWriteInService();
   virtual void onMessage(const SpConnectionMessage &spConnectionMessage);
+  SpNetWorkService getSpNetWorkService();
   int getHandle() const;
   void destroy();
 
 public:
   SpStream spStream_;
-  SpNetWorkService spNetWorkService_;
+  WpNetWorkService wpNetWorkService_;
 
 private:
   int handle_;

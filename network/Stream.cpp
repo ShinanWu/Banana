@@ -31,9 +31,11 @@ Stream::~Stream()
 {
   if (fd_ > 0)
   {
+    spEventReactor_->removeEventHandler(fd_, EventReactor::EVENT_READ | EventReactor::EVENT_READ);
     close(fd_);
     fd_ = -1;
   }
+  LOG(ERROR) << "Stream destructed!";
 }
 
 void Stream::_recvOnePack(int fd, short event)
@@ -135,19 +137,6 @@ void Stream::_sendOnePack(int fd, short event)
     sendCompleteCallback_(sendStat_);
   }
 }
-
-//bool Stream::setPck(const string &sendPck)
-//{
-//  if (getSendStat_() == SENDED)
-//  {
-//    int dataLen = sendPck.size();
-//    sendBuf_.resize(HEADER_LEN + dataLen);
-//    memcpy(&sendBuf_[0], &dataLen, HEADER_LEN);
-//    memcpy((char *) (&sendBuf_[0]) + HEADER_LEN, sendPck.data(), dataLen);
-//    return true;
-//  }
-//  return false;
-//}
 
 int Stream::getFd() const
 {

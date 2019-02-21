@@ -36,5 +36,6 @@ private:
   unordered_map<int, SpConnection> connectionMap_;
 };
 typedef shared_ptr<NetWorkService> SpNetWorkService;
+typedef weak_ptr<NetWorkService> WpNetWorkService;
 
 #endif //SERVICEFRAMEWORK_NETWORKERSERVICE_H
