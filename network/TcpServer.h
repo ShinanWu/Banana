@@ -23,7 +23,7 @@ public:
   void start();
 
 protected:
-  virtual void onConnection(const SpStream& spStream, const SpNetWorkService& spNetWorkService) = 0;
+  virtual void onConnection(const SpStream& spStream, const WpNetWorkService& wpNetWorkService) = 0;
 
 private:
   int netWorkServiceNum_;

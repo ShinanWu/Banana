@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.4)
 project(ServiceFramework CXX C)
 add_definitions(-g -lpthread -std=c++11)
 
-#set(CMAKE_CXX_STANDARD 11)
 aux_source_directory(../examples/MapReduceServer SRC_MAP_REDUCE_SERVER)
 aux_source_directory(../examples/StorageServer SRC_STORAGE_SERVER)
 aux_source_directory(../multi-threading SRC_MUTI_THREADING)
@@ -21,4 +20,4 @@ link_libraries(libevent.a)
 
 add_executable(BenchmarkTest ../examples/MapReduceServer/BenchmarkTest.cpp)
 add_executable(MapReduceServer ${SRC_NETWORK} ${SRC_MUTI_THREADING} ${SRC_UTILS} ../examples/MapReduceServer/MapReduceServer.cpp ../examples/MapReduceServer/MapReduceConnection.cpp ../examples/MapReduceServer/MapReduceConnection.h ../examples/MapReduceServer/MapTask.h ../examples/MapReduceServer/MapDoneConnectionMessage.h)
-add_executable(StorageServer ${SRC_STORAGE_SERVER} ${SRC_NETWORK} ${SRC_MUTI_THREADING} ${SRC_UTILS})
+#add_executable(StorageServer ${SRC_STORAGE_SERVER} ${SRC_NETWORK} ${SRC_MUTI_THREADING} ${SRC_UTILS})

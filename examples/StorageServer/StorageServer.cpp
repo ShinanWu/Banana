@@ -30,7 +30,7 @@ public:
   {}
 
 private:
-  void onConnection(const SpStream &spStream, const SpNetWorkService &spNetWorkService)
+  void onConnection(const SpStream &spStream, const WpNetWorkService &wpNetWorkService)
   {
     LOG(INFO) << "new connection!";
 //    auto spConnection = make_shared<MapReduceConnection>(spStream, spNetWorkService);
