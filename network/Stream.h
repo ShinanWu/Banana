@@ -33,8 +33,8 @@ class Stream
 public:
   Stream(int fd, const SpEventReactor &spEventReactor);
   virtual ~Stream();
-  void asyncRecvBytes(int num, const RecvCompleteCallback &recvCompleteCallback);
-  void asyncSendBytes(const vector<char> &vecBytes, const SendCompleteCallback &sendCompleteCallback);
+  bool asyncRecvBytes(int num, const RecvCompleteCallback &recvCompleteCallback);
+  bool asyncSendBytes(const vector<char> &vecBytes, const SendCompleteCallback &sendCompleteCallback);
   void setOnCloseCallback_(const SocketCloseCallback &onCloseCallback_);
 
   int getFd() const;

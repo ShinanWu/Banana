@@ -63,7 +63,7 @@ void Stream::_recvOnePack(int fd, short event)
     }
     else
     {
-      LOG(ERROR) << "unexpected recv error! shout down recv," << " errno:" << errno;
+      LOG(ERROR) << "unexpected recv error! shout down recv," << " errno: " << errno;
       spEventReactor_->removeEventHandler(fd_, EventReactor::EVENT_READ);
       if (closeCallback_)
       { closeCallback_(fd_); }
@@ -87,7 +87,6 @@ void Stream::_recvOnePack(int fd, short event)
   else
   {
     recvStat_ = RECVED;
-    assert(recvCompleteCallback_);
     recvCompleteCallback_(recvStat_, recvBuf_);
   }
 }
@@ -108,7 +107,7 @@ void Stream::_sendOnePack(int fd, short event)
     }
     else
     {
-      LOG(ERROR) << "unexpected send error! shout down send:" << fd_ << ", errno:" << errno;
+      LOG(ERROR) << "unexpected send error! shout down send:" << fd_ << ", errno: " << errno;
       sendStat_ = SENDERR;
       sendCompleteCallback_(sendStat_);
       return;
@@ -158,37 +157,38 @@ void Stream::setOnCloseCallback_(const SocketCloseCallback &closeCallback)
   closeCallback_ = std::move(closeCallback); //一般只设一次
 }
 
-void Stream::asyncRecvBytes(int num, const RecvCompleteCallback &recvCompleteCallback)
+  bool Stream::asyncRecvBytes(int num, const RecvCompleteCallback &recvCompleteCallback)
 {
   if (!recvCompleteCallback || num > DEFAULT_BUFF_LEN || num <= 0)
   {
-    LOG(ERROR) << "parameter error!";
-    return;
+    LOG(ERROR) << "asyncRecvBytes parameter error!";
+    return false;
   }
   recvLen_ = 0;
   needRecvLen_ = num;
   recvCompleteCallback_ = recvCompleteCallback;
-  spEventReactor_->addEventHandler(fd_, EventReactor::EVENT_READ, recvOnePackCall_);
+  return spEventReactor_->addEventHandler(fd_, EventReactor::EVENT_READ, recvOnePackCall_);
 }
 
-void Stream::asyncSendBytes(const vector<char> &vecBytes, const SendCompleteCallback &sendCompleteCallback)
+bool Stream::asyncSendBytes(const vector<char> &vecBytes, const SendCompleteCallback &sendCompleteCallback)
 {
   int sendSize = vecBytes.size();
   if (!sendCompleteCallback || sendSize > DEFAULT_BUFF_LEN)
   {
-    LOG(ERROR) << "parameter error!";
-    return;
+    LOG(ERROR) << "asyncSendBytes parameter error!";
+    return false;
   }
   sendLen_ = 0;
   needSendLen_ = sendSize;
   sendBuf_ = vecBytes;
   sendCompleteCallback_ = sendCompleteCallback;
-  spEventReactor_->addEventHandler(fd_, EventReactor::EVENT_WRITE, sendOnePackCall_);
+  return spEventReactor_->addEventHandler(fd_, EventReactor::EVENT_WRITE, sendOnePackCall_);
 }
 
 const SpEventReactor &Stream::getSpEventReactor_() const
 {
   return spEventReactor_;
 }
+
 
 

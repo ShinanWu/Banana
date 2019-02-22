@@ -28,6 +28,7 @@ void NetWorkService::onMessage(const shared_ptr<Message> &spMessage)
     SpStream spStream(new Stream(spNewConnectMsg->getClientFd(), spEventReactor_));
     if (newConnectionCb_)
     { newConnectionCb_(spStream,  dynamic_pointer_cast<NetWorkService>(shared_from_this())); }
+    return;
   }
 
   if (spMessage->getWhat() == "CONNECTION")
@@ -40,9 +41,11 @@ void NetWorkService::onMessage(const shared_ptr<Message> &spMessage)
     }
     else
     {
-      assert(0);
+      LOG(ERROR) << "can't find client, handle: " << spConnectionMsg->getHandle();
     }
   }
+  else{assert(0);}
+
 }
 
 void NetWorkService::setNewConnectionCallback(const ConnectionCallback &cb)
