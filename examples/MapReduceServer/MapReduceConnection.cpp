@@ -21,10 +21,14 @@ MapReduceConnection::~MapReduceConnection()
 
 void MapReduceConnection::startReadOrWriteInService()
 {
-  stat_ = RECV_HEAD;
   recvCompleteCallback_ = std::bind(&MapReduceConnection::recvCompleteCallback, this, _1, _2);
   sendCompleteCallback_ = std::bind(&MapReduceConnection::sendCompleteCallback, this, _1);
-  spStream_->asyncRecvBytes(sizeof(size_t), recvCompleteCallback_);
+
+  stat_ = RECV_HEAD;
+  if (!spStream_->asyncRecvBytes(sizeof(int), recvCompleteCallback_))
+  {
+    _destroy();
+  }
 }
 
 void MapReduceConnection::onMessage(const SpConnectionMessage &spConnectionMessage)
@@ -57,19 +61,25 @@ void MapReduceConnection::recvCompleteCallback(int retRecvStat, const vector<cha
 {
   if (retRecvStat == RECVERR)
   {
-    LOG(ERROR) << "IO error! client closed !";
+    LOG(ERROR) << "recv error! wait to lose this client, fd " << spStream_->getFd();
     _destroy();
     return;
   }
   if (stat_ == RECV_HEAD)
   {
-    if (vecBytes.size() < sizeof(size_t))
+    if (vecBytes.size() < sizeof(int))
     {
-      LOG(ERROR) << "message decode error, size is wrong! discard it!";
-      spStream_->asyncRecvBytes(sizeof(size_t), recvCompleteCallback_);
+      LOG(ERROR) << "message decode error, head size is wrong! discard it!";
+      spStream_->asyncRecvBytes(sizeof(int), recvCompleteCallback_);
       return;
     }
-    size_t bodyLen = *(size_t *) (&vecBytes[0]);
+    int bodyLen = *(int *) (&vecBytes[0]);
+    if(bodyLen > 1024)
+    {
+      LOG(ERROR) << "message decode error, body size is too long! discard it!";
+      spStream_->asyncRecvBytes(sizeof(int), recvCompleteCallback_);
+      return;
+    }
     spStream_->asyncRecvBytes(bodyLen, recvCompleteCallback_);
     stat_ = RECV_BODY;
     return;
@@ -86,7 +96,7 @@ void MapReduceConnection::recvCompleteCallback(int retRecvStat, const vector<cha
       taskCount_++;
     }
     stat_ = RECV_HEAD;
-    spStream_->asyncRecvBytes(sizeof(size_t), recvCompleteCallback_);
+    spStream_->asyncRecvBytes(sizeof(int), recvCompleteCallback_);
     return;
   }
 }
@@ -94,19 +104,28 @@ void MapReduceConnection::recvCompleteCallback(int retRecvStat, const vector<cha
 void MapReduceConnection::sendCompleteCallback(int retSendStat)
 {
   LOG(INFO) << "map-reduce task done!";
+  if (retSendStat == SENDERR)
+  {
+    LOG(ERROR) << "send error! wait to lose this client, fd " << spStream_->getFd();
+    _destroy();
+  }
 }
 
 void MapReduceConnection::_destroy()
 {
-  recvCompleteCallback_ = nullptr; //释放自己的引用，防止内存泄漏
+  //释放自己的引用，防止内存泄漏
+  recvCompleteCallback_ = nullptr;
   sendCompleteCallback_ = nullptr;
+  //释放context空间，即销毁此Connection,最后关闭fd可以防止新来的连接复用此fd导致错误的继续使用此context空间
   Connection::destroy();
 }
 
-void MapReduceConnection::mapFunction(weak_ptr<MapReduceConnection> wpConnection, string filePath)
+//注意这是static函数，可以观察发起者的生命周期，参数只能传值，不要传引用，因为在其他线程执行，类似可重入函数
+void MapReduceConnection::mapFunction(weak_ptr<MapReduceConnection> wpConnection, const string filePath)
 {
   auto spConnection = wpConnection.lock();
-  if(!spConnection) return;
+  //如果已析构就结束
+  if (!spConnection) return;
   //do disk IO
   int maxNum;
   int tmp;
@@ -119,6 +138,7 @@ void MapReduceConnection::mapFunction(weak_ptr<MapReduceConnection> wpConnection
   }
   auto spMsg = make_shared<MapDoneConnectionMessage>(spConnection->getHandle(), maxNum);
   auto spService = spConnection->getSpNetWorkService();
+  //回复发起者
   spService->notifyMsg(spMsg);
 
 }

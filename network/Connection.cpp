@@ -14,7 +14,7 @@ Connection::Connection(const SpStream &spStream, const WpNetWorkService &wpNetWo
 
 Connection::~Connection()
 {
-  LOG(ERROR) << "DES";
+  LOG(ERROR) << "~Connection";
 }
 
 int Connection::getHandle() const
@@ -30,6 +30,7 @@ SpNetWorkService Connection::getSpNetWorkService()
 void Connection::destroy()
 {
   auto sp = wpNetWorkService_.lock();
+  //消息队列可能仍有引用，销毁不及时
   sp->removeConnection(handle_);
 }
 

@@ -19,14 +19,14 @@ private:
   virtual void onMessage(const SpConnectionMessage &spConnectionMessage);
   void recvCompleteCallback(int retRecvStat, const vector<char> &vecBytes);
   void sendCompleteCallback(int retSendStat);
-  static void mapFunction(weak_ptr<MapReduceConnection> wpConnection, string filePath);
+  static void mapFunction(weak_ptr<MapReduceConnection> wpConnection, const string filePath);
   int reduce(int last, int cur);
   void _destroy();
 
 private:
   bool firstCome_ = true;
   int taskCount_ = 0;
-  size_t curMaxNum_ = 0;
+  int curMaxNum_ = 0;
   int stat_ = RECV_HEAD;
 
   RecvCompleteCallback recvCompleteCallback_;

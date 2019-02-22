@@ -23,12 +23,13 @@ class MapTask : public IndependentTask
 {
   typedef function<void(void)> RunCallback;
 public:
-  MapTask(const RunCallback &runCallback) : IndependentTask(""), runCallback_(runCallback)
+  MapTask(const RunCallback &runCallback) : IndependentTask("map"), runCallback_(runCallback)
   {}
 
   virtual void run()
   {
     runCallback_();
+    runCallback_ = nullptr;
   }
 
 private:
