@@ -7,18 +7,18 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <sys/eventfd.h>
+#include <unistd.h>
 
 namespace Utils
 {
 
-bool split(const std::string &str, std::vector<std::string> &vecStr, char delim)
-{
-  std::istringstream ss(str);
-  std::string tmpStr;
-  while (std::getline(ss, tmpStr, delim))
-    vecStr.emplace_back(std::move(tmpStr));
-  return true;
-}
+bool split(const std::string &str, std::vector<std::string> &vecStr, char delim);
+
+int createEventFd();
+
+bool setThreadName(const std::string &name);
+
 
 }
 

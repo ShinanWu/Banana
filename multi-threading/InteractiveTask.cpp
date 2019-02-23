@@ -5,6 +5,7 @@
 #include <sys/eventfd.h>
 #include <unistd.h>
 #include <assert.h>
+#include <utils/Utils.h>
 #include "InteractiveTask.h"
 #include "MessageCenter.h"
 
@@ -22,9 +23,9 @@ InteractiveTask::~InteractiveTask()
 void InteractiveTask::start()
 {
   //设置线程名，方便调试
-  assert(__setThreadName(getTaskName()));
+  assert(Utils::setThreadName(getTaskName()));
   LOG(INFO) << "Task " << getTaskName() << " started!";
-  eventFd_ = __createEventFd();
+  eventFd_ = Utils::createEventFd();
   assert(eventFd_ > 0);
   setStat(RUNNING);
 
@@ -69,7 +70,7 @@ void InteractiveTask::__stop() //在此释放资源，不在析构是因为可�
 {
   onStop();//子类行为
   __unregistToMsgCenter();
-  assert(__setThreadName(NORMAL_THREAD_NAME));
+  assert(Utils::setThreadName(NORMAL_THREAD_NAME));
   if (spEventReactor_)
   {
     spEventReactor_->destroyReactor();
@@ -95,28 +96,6 @@ void InteractiveTask::__onMessage(int fd, short event)
   }
   spEventReactor_->addEventHandler(eventFd_, EventReactor::EVENT_READ,
                                    std::bind(&InteractiveTask::__onMessage, this, _1, _2));
-}
-
-bool InteractiveTask::__setThreadName(const string &name)
-{
-  if (prctl(PR_SET_NAME, name.c_str(), 0, 0, 0) == -1)
-  {
-    LOG(ERROR) << "set thread name failed! name:" << name;
-    return false;
-  }
-  return true;
-}
-
-int InteractiveTask::__createEventFd()
-{
-  //不用设置非阻塞，因为信号量性质，有事件通知一定有事件，不会阻塞。没事件也不会来读
-  int eventFd = eventfd(0, EFD_CLOEXEC | EFD_SEMAPHORE);
-  if (eventFd < 0)
-  {
-    LOG(ERROR) << "create eventFd failed!";
-    assert(0);
-  }
-  return eventFd;
 }
 
 int InteractiveTask::sendMsgTo(const string &taskName, const shared_ptr<Message> &spMessage)
@@ -166,6 +145,11 @@ void InteractiveTask::__unregistToMsgCenter()
 const SpEventReactor &InteractiveTask::getSpEventReactor() const
 {
   return spEventReactor_;
+}
+
+int InteractiveTask::getEventFd() const
+{
+  return eventFd_;
 }
 
 

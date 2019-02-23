@@ -31,6 +31,7 @@ public:
   void start() final ;
   int notifyMsg(const shared_ptr<Message> &spMessage);
   const int getStat() const;
+  int getEventFd() const;
   void setStat(int stat);
   const SpEventReactor &getSpEventReactor() const;
 
@@ -43,8 +44,6 @@ protected:
 private:
   void __stop();
   void __onMessage(int fd, short event);
-  bool __setThreadName(const string &name);
-  int __createEventFd();
   bool __registToMsgCenter();
   void __unregistToMsgCenter();
 

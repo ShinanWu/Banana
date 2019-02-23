@@ -88,7 +88,7 @@ void MapReduceConnection::recvCompleteCallback(int retRecvStat, const vector<cha
   {
     string str(vecBytes.begin(), vecBytes.end());
     vector<string> vecStr;
-    split(str, vecStr, ' ');
+    Utils::split(str, vecStr, ' ');
     for (auto &path : vecStr) //map阶段开始
     {
       auto spTask = make_shared<MapTask>(bind(MapReduceConnection::mapFunction, shared_from_this(), path));
