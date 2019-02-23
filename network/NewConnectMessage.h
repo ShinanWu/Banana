@@ -10,13 +10,13 @@
 class NewConnectMessage : public Message
 {
 public:
-  NewConnectMessage(int clientFd) : Message("NEW_CONNECT"), clientFd_(clientFd)
+  NewConnectMessage(int clientFd = -1) : Message("NEW_CONNECT"), clientFd_(clientFd)
   {}
 
   virtual ~NewConnectMessage()
   {}
 
-  int getClientFd()
+  int getClientFd() const
   { return clientFd_; }
 
 private:
