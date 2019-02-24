@@ -88,7 +88,7 @@ bool LibeventRector::addEventHandler(int fd, short events, const EventReactor::E
       LOG(ERROR) << "add EV_READ failed!";
       return false;
     }
-    pEventBundleMap_[fd].readCallback_ = std::move(cb);
+    pEventBundleMap_[fd].readCallback_ = cb;
   }
   if (events & EVENT_WRITE)  //写事件
   {
@@ -106,7 +106,7 @@ bool LibeventRector::addEventHandler(int fd, short events, const EventReactor::E
       LOG(ERROR) << "add EV_WRITE failed!";
       return false;
     }
-    pEventBundleMap_[fd].writeCallback_ = std::move(cb);
+    pEventBundleMap_[fd].writeCallback_ = cb;
   }
   return true;
 }
@@ -170,7 +170,7 @@ bool LibeventRector::removeEventHandler(int fd, short events)
       assert(0);
     }
     event_free(pEventBundleMap_[fd].pWriteEvent_);
-    pEventBundleMap_[fd].pWriteEvent_ = nullptr;
+      pEventBundleMap_[fd].pWriteEvent_ = nullptr;
   }
   return true;
 }

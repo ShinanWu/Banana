@@ -5,6 +5,9 @@
 #include <string>
 #include <sstream>
 #include <string>
+#include <sys/prctl.h>
+#include <sys/eventfd.h>
+#include <unistd.h>
 #include "Utils.h"
 
 namespace Utils
