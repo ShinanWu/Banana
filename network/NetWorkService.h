@@ -10,11 +10,12 @@
 #include <multi-threading/InteractiveTask.h>
 #include <unordered_map>
 #include "Stream.h"
-class Connection;
-typedef std::shared_ptr<Connection> SpConnection;
-#include "Connection.h"
 #include "multi-threading/WaitFreeConcurrentRingBuffer.h"
 #include "NewConnectMessage.h"
+
+class Connection;
+typedef std::shared_ptr<Connection> SpConnection;
+
 using namespace std;
 
 class NetWorkService : public InteractiveTask
