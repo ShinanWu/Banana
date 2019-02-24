@@ -86,7 +86,9 @@ void Stream::_recvOnePack(int fd, short event)
     //收到全部数据
   else
   {
+    recvLen_ += recvLen;
     recvStat_ = RECVED;
+    recvBuf_.resize(recvLen_);
     recvCompleteCallback_(recvStat_, recvBuf_);
   }
 }
