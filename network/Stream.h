@@ -36,6 +36,8 @@ public:
   bool asyncRecvBytes(int num, const RecvCompleteCallback &recvCompleteCallback);
   bool asyncSendBytes(const vector<char> &vecBytes, const SendCompleteCallback &sendCompleteCallback);
   void setOnCloseCallback_(const SocketCloseCallback &onCloseCallback_);
+  //清除成员变量，以防持有其他实例的引用
+  void destory();
 
   int getFd() const;
   int getRecvStat_() const;

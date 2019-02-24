@@ -192,5 +192,15 @@ const SpEventReactor &Stream::getSpEventReactor_() const
   return spEventReactor_;
 }
 
+void Stream::destory()
+{
+  recvOnePackCall_ = nullptr;
+  sendOnePackCall_ = nullptr;
+  closeCallback_ = nullptr;
+  recvCompleteCallback_ = nullptr;
+  sendCompleteCallback_ = nullptr;
+  spEventReactor_ = nullptr;
+}
+
 
 
