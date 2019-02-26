@@ -52,7 +52,7 @@ protected:
   SpEventReactor spEventReactor_{nullptr};
 
 private:
-  MsgQueue recvMsgQueue_{50};//每个InteractiveTask独占一个消息队列，生命周期和task一致
+  MsgQueue recvMsgQueue_{3000};//每个InteractiveTask独占一个消息队列，生命周期和task一致
   int eventFd_{-1};
   atomic<int> stat_{STARTING}; //表示状态
 };

@@ -7,7 +7,7 @@
 #include <functional>
 #include <memory>
 #include "multi-threading/Task.h"
-#define DEFAULT_MAX_CLIENTS 50000
+#define DEFAULT_MAX_CLIENTS 20000
 using namespace std;
 
 //事件发生器基类

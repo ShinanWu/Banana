@@ -12,7 +12,6 @@
 #include "NetWorkService.h"
 #include "Stream.h"
 
-#define MAX_CLIENTS 50000 //限制最大连接数
 using namespace std;
 
 class TcpServer
@@ -20,7 +19,9 @@ class TcpServer
 public:
   explicit TcpServer(int netWorkServiceNum, unsigned short listenPort, int threadPoolNum = 0);
   ~TcpServer();
+  virtual void onLoop();
   void start();
+  const shared_ptr<NetAcceptService> &getSpNetAcceptService() const;
 
 protected:
   virtual void onConnection(const SpStream& spStream, const WpNetWorkService& wpNetWorkService) = 0;

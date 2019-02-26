@@ -38,10 +38,10 @@ bool TcpServer::_startNetAcceptService()
 {
   SpEventReactor spReactor(new LibeventRector);
   spReactor->bindPort(listenPort_);
-  spNetAcceptService_.reset(new NetAcceptService("AcceptService", spReactor));
+  spNetAcceptService_.reset(new NetAcceptService("AcceptService", spReactor, *this));
   spNetAcceptService_->vecSpWorkService_ = std::move(vecSpNetWorkService_);
   //等待worker线程准备完毕再开始accept，否则可能起初的连接失败
-  for (auto it : spNetAcceptService_->vecSpWorkService_)
+  for (auto& it : spNetAcceptService_->vecSpWorkService_)
   {
     weak_ptr<InteractiveTask> wpNetWorkService;
     MessageCenter::Instance()->waitGetTaskRef(it->getTaskName(), wpNetWorkService);
@@ -64,3 +64,11 @@ bool TcpServer::_startNetWorkService()
     ThreadPool::getInstance()->syncPostTask(vecSpNetWorkService_[i]);
   }
 }
+
+const shared_ptr<NetAcceptService> &TcpServer::getSpNetAcceptService() const
+{
+  return spNetAcceptService_;
+}
+
+void TcpServer::onLoop()
+{}

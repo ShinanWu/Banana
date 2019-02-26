@@ -7,11 +7,13 @@
 
 #include <multi-threading/InteractiveTask.h>
 #include "NetWorkService.h"
+class TcpServer;
 
 class NetAcceptService : public InteractiveTask
 {
 public:
-  NetAcceptService(const string &name, const SpEventReactor &spEventReactor);
+//  NetAcceptService(const string &name, const SpEventReactor &spEventReactor);
+  NetAcceptService(const string &name, const SpEventReactor &spEventReactor, TcpServer &tcpServer);
   virtual ~NetAcceptService();
 
 private:
@@ -24,6 +26,7 @@ public:
   vector<shared_ptr<NetWorkService>> vecSpWorkService_;
 
 private:
+  TcpServer &tcpServer_;
   int curServiceIndex_ = 0;
   int _nextServiceIndex();
 };

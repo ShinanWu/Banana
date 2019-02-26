@@ -1,6 +1,7 @@
 //
 // Created by Shinan on 2019/1/19.
 //消息基类，整个框架以此消息结构为基础，可设置回调函数返回应答消息
+//to-do，不使用基类，使用模板，消息标识使用内置类型如int，不使用string
 
 #ifndef SEVICEFRAMEWORK_MESSAGES_H
 #define SEVICEFRAMEWORK_MESSAGES_H

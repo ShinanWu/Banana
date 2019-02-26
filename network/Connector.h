@@ -37,7 +37,10 @@ private:
   EventReactor::EventCallback connectEventCallback_;
   ConnectCallback connectCallback_;
   SpEventReactor spEventReactor_;
+
+public:
   static struct sockaddr_in addr_in_local;
+
 };
 
 #endif //SERVICEFRAMEWORK_CONNECTOR_H

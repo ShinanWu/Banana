@@ -31,11 +31,11 @@ Stream::~Stream()
 {
   if (fd_ > 0)
   {
-    spEventReactor_->removeEventHandler(fd_, EventReactor::EVENT_READ | EventReactor::EVENT_READ);
+    spEventReactor_->removeEventHandler(fd_, EventReactor::EVENT_READ | EventReactor::EVENT_WRITE);
     close(fd_);
     fd_ = -1;
   }
-  LOG(ERROR) << "Stream destructed!";
+//  LOG(ERROR) << "Stream destructed!";
 }
 
 void Stream::_recvOnePack(int fd, short event)
@@ -63,8 +63,7 @@ void Stream::_recvOnePack(int fd, short event)
     }
     else
     {
-      LOG(ERROR) << "unexpected recv error! shout down recv," << " errno: " << errno;
-      spEventReactor_->removeEventHandler(fd_, EventReactor::EVENT_READ);
+    //  LOG(ERROR) << "unexpected recv error! shout down recv," << " errno: " << errno;
       if (closeCallback_)
       { closeCallback_(fd_); }
       //close fd，析构的时候再close,和stream生命周期保持一致
@@ -86,9 +85,7 @@ void Stream::_recvOnePack(int fd, short event)
     //收到全部数据
   else
   {
-    recvLen_ += recvLen;
     recvStat_ = RECVED;
-    recvBuf_.resize(recvLen_);
     recvCompleteCallback_(recvStat_, recvBuf_);
   }
 }
@@ -109,7 +106,7 @@ void Stream::_sendOnePack(int fd, short event)
     }
     else
     {
-      LOG(ERROR) << "unexpected send error! shout down send:" << fd_ << ", errno: " << errno;
+    //  LOG(ERROR) << "unexpected send error! shout down send:" << fd_ << ", errno: " << errno;
       sendStat_ = SENDERR;
       sendCompleteCallback_(sendStat_);
       return;
@@ -156,7 +153,7 @@ int Stream::getSendStat_() const
 
 void Stream::setOnCloseCallback_(const SocketCloseCallback &closeCallback)
 {
-  closeCallback_ = std::move(closeCallback); //一般只设一次
+  closeCallback_ = closeCallback; //一般只设一次
 }
 
   bool Stream::asyncRecvBytes(int num, const RecvCompleteCallback &recvCompleteCallback)
@@ -168,6 +165,7 @@ void Stream::setOnCloseCallback_(const SocketCloseCallback &closeCallback)
   }
   recvLen_ = 0;
   needRecvLen_ = num;
+  recvBuf_.resize(num);
   recvCompleteCallback_ = recvCompleteCallback;
   return spEventReactor_->addEventHandler(fd_, EventReactor::EVENT_READ, recvOnePackCall_);
 }
@@ -190,16 +188,6 @@ bool Stream::asyncSendBytes(const vector<char> &vecBytes, const SendCompleteCall
 const SpEventReactor &Stream::getSpEventReactor_() const
 {
   return spEventReactor_;
-}
-
-void Stream::destory()
-{
-  recvOnePackCall_ = nullptr;
-  sendOnePackCall_ = nullptr;
-  closeCallback_ = nullptr;
-  recvCompleteCallback_ = nullptr;
-  sendCompleteCallback_ = nullptr;
-  spEventReactor_ = nullptr;
 }
 
 

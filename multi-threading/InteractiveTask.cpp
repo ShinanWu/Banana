@@ -10,6 +10,7 @@
 #include "MessageCenter.h"
 
 #define NORMAL_THREAD_NAME "availible"
+#define MAX_CLIENT_NUM 100000
 
 using namespace std::placeholders;
 
@@ -32,7 +33,7 @@ void InteractiveTask::start()
   //有事件反应堆
   if (spEventReactor_)
   {
-    assert(spEventReactor_->initReactor());
+    assert(spEventReactor_->initReactor(MAX_CLIENT_NUM));
     spEventReactor_->addEventHandler(eventFd_, EventReactor::EVENT_READ,
                                      std::bind(&InteractiveTask::__onMessage, this, _1, _2));
     assert(__registToMsgCenter()); //向MessageCenter注册
@@ -121,11 +122,6 @@ void InteractiveTask::setStat(int stat)
 {
   stat_.store(stat, memory_order_relaxed);
 }
-
-//void InteractiveTask::_setEventReactor(const SpEventReactor &eventReactor_)
-//{
-//  InteractiveTask::spEventReactor_ = std::move(eventReactor_);
-//}
 
 bool InteractiveTask::__registToMsgCenter()
 {

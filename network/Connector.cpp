@@ -17,11 +17,11 @@
 #include "logging.h"
 
 //绑定的本地端口
-struct sockaddr_in Connector::addr_in_local
+struct sockaddr_in Connector::addr_in_local =
     {
-        .sin_family = AF_INET,
-        .sin_addr.s_addr = inet_addr("0.0.0.0"),
-        .sin_port = htons(12306)
+        addr_in_local.sin_family = AF_INET,
+        addr_in_local.sin_addr.s_addr = htonl(INADDR_ANY), //inet_addr("0.0.0.0"),
+        addr_in_local.sin_port = htons(12306)
     };
 
 Connector::Connector(const SpEventReactor &spEventReactor_) : spEventReactor_(spEventReactor_)
@@ -29,7 +29,7 @@ Connector::Connector(const SpEventReactor &spEventReactor_) : spEventReactor_(sp
 
 void Connector::asyncConnect(const string &ip, unsigned short port, const ConnectCallback &connectCallback)
 {
-  if (ip.size() < 7 || ip.size() > 15) return false;
+  if (ip.size() < 7 || ip.size() > 15) return;
 
   int ret = CONNECT_ERR;
   int sockFd = -1;
@@ -57,13 +57,13 @@ void Connector::asyncConnect(const string &ip, unsigned short port, const Connec
       ret = CONNECT_ERR;
       break;
     }
-    if (bind(sockFd, static_cast<struct sockaddr *>(&addr_in_local), sizeof(sockaddr)) == -1)
-    {
-      LOG(ERROR) << "bind port " << ntohs(addr_in_local.sin_port) << "failed! errno " << errno;
-      ret = CONNECT_ERR;
-      break;
-    }
-    int retVal = connect(sockFd, static_cast<struct sockaddr *>(&addr_in), sizeof(sockaddr));
+//    if (bind(sockFd, (struct sockaddr *)(&addr_in_local), sizeof(sockaddr)) == -1)
+//    {
+//      LOG(ERROR) << "bind port " << ntohs(addr_in_local.sin_port) << "failed! errno " << errno;
+//      ret = CONNECT_ERR;
+//      break;
+//    }
+    int retVal = connect(sockFd, (struct sockaddr *)(&addr_in), sizeof(sockaddr));
     if (retVal == 0)
     {
       ret = CONNECT_OK;
@@ -109,7 +109,7 @@ void Connector::asyncConnect(const string &ip, unsigned short port, const Connec
 void Connector::_onConnectEvent(int fd, short event)
 {
   int err = 0;
-  int len = sizeof(err);
+  socklen_t len = sizeof(err);
 
   if (getsockopt(fd, SOL_SOCKET, SO_ERROR, (void *) &err, &len) == -1)
   {

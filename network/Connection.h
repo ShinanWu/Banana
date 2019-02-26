@@ -8,15 +8,16 @@
 #include <assert.h>
 #include "Stream.h"
 #include "ConnectionMessage.h"
+
 //前向声明
 class NetWorkService;
 typedef weak_ptr<NetWorkService> WpNetWorkService;
 typedef shared_ptr<NetWorkService> SpNetWorkService;
-#include "NetWorkService.h"
 
 class Connection
 {
 public:
+  explicit Connection(const SpStream &spStream);
   Connection(const SpStream &spStream, const WpNetWorkService &wpNetWorkService);
   virtual ~Connection();
 

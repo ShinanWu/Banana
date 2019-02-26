@@ -6,6 +6,8 @@
 #include "NetWorkService.h"
 #include "NewConnectMessage.h"
 #include "ConnectionMessage.h"
+#include "Connection.h"
+
 using namespace Utils;
 using namespace std::placeholders;
 

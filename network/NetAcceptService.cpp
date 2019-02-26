@@ -14,16 +14,20 @@
 #include "NetAcceptService.h"
 #include "LibeventReactor.h"
 #include "NewConnectMessage.h"
+#include "TcpServer.h"
 
-#define MAX_CLIENTS_ACCEPT 50000
 using namespace std;
 using namespace std::placeholders;
 
-NetAcceptService::NetAcceptService(const string &name, const SpEventReactor &spEventReactor)
-    : InteractiveTask(name, spEventReactor)
-{
-  assert(spEventReactor);
-}
+//NetAcceptService::NetAcceptService(const string &name, const SpEventReactor &spEventReactor)
+//    : InteractiveTask(name, spEventReactor)
+//{
+//  assert(spEventReactor);
+//}
+NetAcceptService::NetAcceptService(const string &name,
+                                   const SpEventReactor &spEventReactor,
+                                   TcpServer &tcpServer) : InteractiveTask(name, spEventReactor), tcpServer_(tcpServer)
+{}
 
 NetAcceptService::~NetAcceptService()
 {}
@@ -33,6 +37,7 @@ void NetAcceptService::onStart()
   spEventReactor_->addEventHandler(0,
                                    EventReactor::EVENT_ACCEPT,
                                    std::bind(&NetAcceptService::__onAccept, this, _1));
+  tcpServer_.onLoop();
   LOG(INFO) << "NetAcceptService " << getTaskName() << " started!";
 }
 
@@ -51,7 +56,7 @@ void NetAcceptService::__onAccept(int fd)
   //Round-Robin向每个worker发送
   auto spMessage = std::make_shared<NewConnectMessage>(fd);
   vecSpWorkService_[_nextServiceIndex()]->notifyMsg(spMessage);
-  LOG(INFO) << "one client connected! fd: " << fd;
+//  LOG(INFO) << "one client connected! fd: " << fd;
 }
 
 int NetAcceptService::_nextServiceIndex()
@@ -61,6 +66,7 @@ int NetAcceptService::_nextServiceIndex()
   { curServiceIndex_ = 0; }
   return curServiceIndex_;
 }
+
 
 
 
