@@ -8,6 +8,10 @@ using namespace std::placeholders;
 ConcurrentConnection::ConcurrentConnection(const SpStream &spStream) : Connection(spStream)
 {}
 
+ConcurrentConnection::ConcurrentConnection(const SpStream &spStream, const WpNetWorkService &wpNetWorkService)
+    : Connection(spStream, wpNetWorkService)
+{}
+
 void ConcurrentConnection::startReadOrWriteInService()
 {
   recvCompleteCallback_ = std::bind(&ConcurrentConnection::recvCompleteCallback, this, _1, _2);
@@ -38,7 +42,7 @@ void ConcurrentConnection::recvCompleteCallback(int retRecvStat, const vector<ch
       return;
     }
     int bodyLen = *(int *) (&vecBytes[0]);
-    if(bodyLen > 1024)
+    if (bodyLen > 1024)
     {
       LOG(ERROR) << "message decode error, body size is too long! discard it!";
       spStream_->asyncRecvBytes(sizeof(int), recvCompleteCallback_);
@@ -89,3 +93,4 @@ void ConcurrentConnection::_destroy()
   //释放context空间，即销毁此Connection,最后关闭fd可以防止新来的连接复用此fd导致错误的继续使用此context空间
   Connection::destroy();
 }
+

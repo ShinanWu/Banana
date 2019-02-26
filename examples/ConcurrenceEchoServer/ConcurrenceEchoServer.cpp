@@ -20,7 +20,7 @@ ConcurrenceEchoServer::ConcurrenceEchoServer(int netWorkServiceNum, unsigned sho
 void ConcurrenceEchoServer::onConnection(const SpStream &spStream, const WpNetWorkService &wpNetWorkService)
 {
 //  LOG(INFO) << "new connection!";
-  auto spConnection = make_shared<ConcurrentConnection>(spStream);
+  auto spConnection = make_shared<ConcurrentConnection>(spStream, wpNetWorkService);
   //这里需要持有引用是因为GCC的bug使得shared_ptr在enable_shared_from_this后不能在类里析构
   auto spService = wpNetWorkService.lock();
   spService->addNewConnection(spConnection);

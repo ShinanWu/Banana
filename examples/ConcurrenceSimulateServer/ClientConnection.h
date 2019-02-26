@@ -13,7 +13,6 @@ class ClientConnection : public Connection, public enable_shared_from_this<Clien
   enum {RECV_HEAD, RECV_BODY, SEND_HEAD, SENDBODY};
 public:
   ClientConnection(const SpStream &spStream, ConcurrenceSimulateServer &simulateServer);
-
 public:
   virtual void startReadOrWriteInService();
 
@@ -24,8 +23,8 @@ private:
 
 private:
   int stat_ = RECV_HEAD;
-  int echoCount_ = 0;
   stringstream ss_ ;
+  int selfEchoCount_ = 0;
   vector<char> sendBuf_;
   vector<char> recvBuf_;
   RecvCompleteCallback recvCompleteCallback_;

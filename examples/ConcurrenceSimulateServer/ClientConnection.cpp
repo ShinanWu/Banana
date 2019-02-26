@@ -21,19 +21,19 @@ void ClientConnection::startReadOrWriteInService()
     LOG(ERROR) << "first client connected! fd:" << spStream_->getFd();
 
   }
-  if (simulateServer_.connectedCount_++ == simulateServer_.clientNum_)
+  if (++simulateServer_.connectedCount_ == simulateServer_.clientNum_)
   {
     simulateServer_.connectedCountEndTime_ = std::chrono::system_clock::now();
     long long duration = std::chrono::duration_cast<std::chrono::milliseconds>(
         simulateServer_.connectedCountEndTime_ - simulateServer_.connectedCountStartTime_).count();
-    LOG(ERROR) << "all clients connected! duration:" << duration;
+    LOG(ERROR) << "all " << simulateServer_.connectedCount_ << " clients connected! duration:" << duration;
   }
 
-  recvCompleteCallback_ = std::bind(&ClientConnection::recvCompleteCallback, shared_from_this(), _1, _2);
-  sendCompleteCallback_ = std::bind(&ClientConnection::sendCompleteCallback, shared_from_this(), _1);
+  recvCompleteCallback_ = std::bind(&ClientConnection::recvCompleteCallback, this, _1, _2);
+  sendCompleteCallback_ = std::bind(&ClientConnection::sendCompleteCallback, this, _1);
   //发送
   ss_.str("");
-  ss_ << "client fd:" << spStream_->getFd() << " echo count : " << echoCount_;
+  ss_ << "client fd:" << spStream_->getFd() << " echo count : " << simulateServer_.echoCount_;
   int len = ss_.str().size();
   sendBuf_.resize(sizeof(len) + len);
   memcpy(&sendBuf_[0], &len, sizeof(len));
@@ -58,7 +58,7 @@ void ClientConnection::recvCompleteCallback(int retRecvStat, const vector<char> 
 {
   if (retRecvStat == RECVERR)
   {
-    LOG(ERROR) << "recv error! client fd:" << spStream_->getFd() << " echoCount:" << echoCount_;
+    LOG(ERROR) << "recv error! client fd:" << spStream_->getFd() << " echoCount:" << simulateServer_.echoCount_;
     _destroy();
     return;
   }
@@ -84,16 +84,28 @@ void ClientConnection::recvCompleteCallback(int retRecvStat, const vector<char> 
   if (stat_ == RECV_BODY)
   {
     string str(vecBytes.begin(), vecBytes.end());
-    LOG(INFO) << "from Server, " << str;
-    if (echoCount_++ == simulateServer_.msgNum_ * simulateServer_.clientNum_)
+
+//    if (simulateServer_.echoCount_ % 1000 == 0)
+//    {
+//      LOG(INFO) << "1000 " << "echo msg received! msg : " << str;
+//    }
+    //   LOG(INFO) << "from Server, " << str;
+    //收到全部信息则退出
+    if (++simulateServer_.echoCount_ == simulateServer_.msgNum_ * simulateServer_.clientNum_)
     {
       simulateServer_.connectedRecvEndTime_ = std::chrono::system_clock::now();
       long long int duration = std::chrono::duration_cast<std::chrono::milliseconds>(
           simulateServer_.connectedRecvEndTime_ - simulateServer_.connectedSendStartTime_).count();
-      LOG(INFO) << "all echo received! duration:" << duration << " ms";
+      LOG(INFO) << "all " << simulateServer_.echoCount_ <<" echo received! duration:" << duration << " ms";
       _destroy();
-      return;
+      exit(0);
     }
+    //每个client收到自己全部的echo即断开连接
+//    if (++selfEchoCount_ == simulateServer_.msgNum_)
+//    {
+//      _destroy();
+//      return;
+//    }
     stat_ = RECV_HEAD;
     spStream_->asyncRecvBytes(sizeof(int), recvCompleteCallback_);
     return;
@@ -104,7 +116,7 @@ void ClientConnection::sendCompleteCallback(int retSendStat)
 {
   if (retSendStat == SENDERR)
   {
-    LOG(ERROR) << "send error! client fd:" << " echoCount:" << echoCount_;
+    LOG(ERROR) << "send error! client fd:" << getHandle() << " echoCount:" << simulateServer_.echoCount_;
     _destroy();
     return;
   }
@@ -115,7 +127,7 @@ void ClientConnection::sendCompleteCallback(int retSendStat)
     simulateServer_.connectedSendStartTime_ = std::chrono::system_clock::now();
   }
   ss_.str("");
-  ss_ << "client fd:" << spStream_->getFd() << "echo count : " << echoCount_;
+  ss_ << "client fd:" << spStream_->getFd() << "echo count : " << simulateServer_.echoCount_;
   int len = ss_.str().size();
   sendBuf_.resize(sizeof(len) + len);
   memcpy(&sendBuf_[0], &len, sizeof(len));
@@ -131,9 +143,12 @@ void ClientConnection::_destroy()
 {
   //spStream_->destory();
   //spStream_ = nullptr;
-  recvCompleteCallback_ = nullptr;
-  sendCompleteCallback_ = nullptr;
+  // recvCompleteCallback_ = nullptr;
+  //sendCompleteCallback_ = nullptr;
+  //Connection::destroy();
+  simulateServer_.connectionMap_.erase(getHandle());
 }
+
 
 
 

@@ -1,6 +1,15 @@
 //
 // Created by Shinan on 2019/2/23.
 // 模拟客户端请求，和ConcurrenceEchoServer配合做并发测试
+// 注意设置最大文件句柄数。
+//测试并发连接数
+
+//并发客户端数目
+#define CLIENT_NUM  50000
+
+//每个客户端发的消息数目
+#define MSG_NUM_EACH_CLIENT  1
+
 #include <logging.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -18,8 +27,9 @@
 #define THREAD_POOL_NUM 0 //不要线程池
 #define LISTEN_PORT 1935 //随意，不需要
 
+
 ConcurrenceSimulateServer::ConcurrenceSimulateServer(int netWorkServiceNum, unsigned short listenPort, int threadPoolNum)
-    : TcpServer(netWorkServiceNum, listenPort, threadPoolNum)
+    : TcpServer(netWorkServiceNum, listenPort, threadPoolNum), clientNum_(CLIENT_NUM), msgNum_(MSG_NUM_EACH_CLIENT)
 {}
 
 void ConcurrenceSimulateServer::_creatConnections(int num)
@@ -28,7 +38,7 @@ void ConcurrenceSimulateServer::_creatConnections(int num)
   {
     auto spConnector = make_shared<Connector>(getSpNetAcceptService()->getSpEventReactor());
     spConnector->asyncConnect("0.0.0.0",
-                              10087,
+                              12306,
                               std::bind(&ConcurrenceSimulateServer::onConnected, this, std::placeholders::_1));
   }
 }
@@ -38,6 +48,7 @@ void ConcurrenceSimulateServer::onConnected(int fd)
   if (fd <= 0) return;
   auto spStream = make_shared<Stream>(fd, getSpNetAcceptService()->getSpEventReactor());
   auto spClientConnection = make_shared<ClientConnection>(spStream, *this);
+  connectionMap_.emplace(std::make_pair(spClientConnection->getHandle(), spClientConnection));
   spClientConnection->startReadOrWriteInService();
 }
 
