@@ -21,9 +21,9 @@ void ConcurrenceEchoServer::onConnection(const SpStream &spStream, const WpNetWo
 {
 //  LOG(INFO) << "new connection!";
   auto spConnection = make_shared<ConcurrentConnection>(spStream);
-
-  //客户端间不需要通信
-//  spService->addNewConnection(spConnection);
+  //这里需要持有引用是因为GCC的bug使得shared_ptr在enable_shared_from_this后不能在类里析构
+  auto spService = wpNetWorkService.lock();
+  spService->addNewConnection(spConnection);
   spConnection->startReadOrWriteInService();
 }
 

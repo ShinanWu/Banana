@@ -10,8 +10,8 @@ ConcurrentConnection::ConcurrentConnection(const SpStream &spStream) : Connectio
 
 void ConcurrentConnection::startReadOrWriteInService()
 {
-  recvCompleteCallback_ = std::bind(&ConcurrentConnection::recvCompleteCallback, shared_from_this(), _1, _2);
-  sendCompleteCallback_ = std::bind(&ConcurrentConnection::sendCompleteCallback, shared_from_this(), _1);
+  recvCompleteCallback_ = std::bind(&ConcurrentConnection::recvCompleteCallback, this, _1, _2);
+  sendCompleteCallback_ = std::bind(&ConcurrentConnection::sendCompleteCallback, this, _1);
 
   stat_ = RECV_HEAD;
   if (!spStream_->asyncRecvBytes(sizeof(int), recvCompleteCallback_))
@@ -82,10 +82,10 @@ void ConcurrentConnection::sendCompleteCallback(int retSendStat)
 void ConcurrentConnection::_destroy()
 {
 //  spStream_->destory();
-  //spStream_.reset(); //???????????????????????????
+  //spStream_.reset();
   //释放自己的引用，防止内存泄漏
-  recvCompleteCallback_ = nullptr;
-  sendCompleteCallback_ = nullptr;
+  //recvCompleteCallback_ = nullptr;
+  //sendCompleteCallback_ = nullptr;
   //释放context空间，即销毁此Connection,最后关闭fd可以防止新来的连接复用此fd导致错误的继续使用此context空间
- // Connection::destroy();
+  Connection::destroy();
 }
