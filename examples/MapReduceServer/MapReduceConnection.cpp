@@ -7,6 +7,8 @@
 #include "MapDoneConnectionMessage.h"
 #include "MapTask.h"
 #include "multi-threading/ThreadPool.h"
+#include <network/NetWorkService.h>
+
 using namespace Utils;
 using namespace std::placeholders;
 
@@ -28,6 +30,7 @@ void MapReduceConnection::startReadOrWriteInService()
   if (!spStream_->asyncRecvBytes(sizeof(int), recvCompleteCallback_))
   {
     _destroy();
+    return;
   }
 }
 
@@ -108,16 +111,19 @@ void MapReduceConnection::sendCompleteCallback(int retSendStat)
   {
     LOG(ERROR) << "send error! wait to lose this client, fd " << spStream_->getFd();
     _destroy();
+    return;
   }
 }
-
+//注意释放顺序，先释放全局引用，避免串话，最后释放自己
 void MapReduceConnection::_destroy()
 {
-  //释放自己的引用，防止内存泄漏
-  recvCompleteCallback_ = nullptr;
-  sendCompleteCallback_ = nullptr;
   //释放context空间，即销毁此Connection,最后关闭fd可以防止新来的连接复用此fd导致错误的继续使用此context空间
   Connection::destroy();
+//  spStream_->destory();
+//  spStream_ = nullptr;
+  //释放自己的引用，防止内存泄漏,
+//  recvCompleteCallback_ = nullptr;
+//  sendCompleteCallback_ = nullptr;
 }
 
 //注意这是static函数，可以观察发起者的生命周期，参数只能传值，不要传引用，因为在其他线程执行，类似可重入函数

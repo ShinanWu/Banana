@@ -1,7 +1,7 @@
 //
 // Created by Shinan on 2019/2/18.
 //
-//以简单的map-reduce为例，实现CPU并行计算
+//以简单的map-reduce为例，实现多核并行计算，并将结果返回给客户端
 //从10个文件里找到最大的数并返回给客户端
 
 #include <memory>
@@ -19,7 +19,7 @@
 #include "network/NetAcceptService.h"
 #include "network/NetWorkService.h"
 
-#define REACTOR_NUM 4 //根据CPU数目来，一般可设为CPU数目相当
+#define REACTOR_NUM 1 //根据CPU数目来，一般可设为CPU数目相当
 #define THREAD_POOL_NUM 20 //根据测试进行调整，值不要太大
 #define LISTEN_PORT 10087
 
@@ -56,6 +56,7 @@ int main()
 {
   signal(SIGPIPE, SIG_IGN);//忽略pipe破裂信号
   initLogging();
+
   MapReduceServer mapReduceServer(REACTOR_NUM, LISTEN_PORT, THREAD_POOL_NUM);
   mapReduceServer.start();
   LOG(ERROR) << "MapReduceServer exit!";
