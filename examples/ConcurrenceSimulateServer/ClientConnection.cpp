@@ -26,7 +26,7 @@ void ClientConnection::startReadOrWriteInService()
     simulateServer_.connectedCountEndTime_ = std::chrono::system_clock::now();
     long long duration = std::chrono::duration_cast<std::chrono::milliseconds>(
         simulateServer_.connectedCountEndTime_ - simulateServer_.connectedCountStartTime_).count();
-    LOG(ERROR) << "all " << simulateServer_.connectedCount_ << " clients connected! duration:" << duration;
+    LOG(ERROR) << "all " << simulateServer_.connectedCount_ << " clients connected! duration:" << duration << " ms";
   }
 
   recvCompleteCallback_ = std::bind(&ClientConnection::recvCompleteCallback, this, _1, _2);
@@ -58,7 +58,7 @@ void ClientConnection::recvCompleteCallback(int retRecvStat, const vector<char> 
 {
   if (retRecvStat == RECVERR)
   {
-    LOG(ERROR) << "recv error! client fd:" << spStream_->getFd() << " echoCount:" << simulateServer_.echoCount_;
+   // LOG(ERROR) << "recv error! client fd:" << spStream_->getFd() << " echoCount:" << simulateServer_.echoCount_;
     _destroy();
     return;
   }
@@ -116,7 +116,7 @@ void ClientConnection::sendCompleteCallback(int retSendStat)
 {
   if (retSendStat == SENDERR)
   {
-    LOG(ERROR) << "send error! client fd:" << getHandle() << " echoCount:" << simulateServer_.echoCount_;
+  //  LOG(ERROR) << "send error! client fd:" << getHandle() << " echoCount:" << simulateServer_.echoCount_;
     _destroy();
     return;
   }

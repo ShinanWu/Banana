@@ -1,14 +1,14 @@
 //
 // Created by Shinan on 2019/2/23.
 // 模拟客户端请求，和ConcurrenceEchoServer配合做并发测试
-// 注意设置最大文件句柄数。
+// 注意设置最大文件句柄数,先启动echo server,再启动simulate server
 //测试并发连接数
 
 //并发客户端数目
-#define CLIENT_NUM  50000
+#define CLIENT_NUM  20000
 
 //每个客户端发的消息数目
-#define MSG_NUM_EACH_CLIENT  1
+#define MSG_NUM_EACH_CLIENT  5
 
 #include <logging.h>
 #include <sys/stat.h>

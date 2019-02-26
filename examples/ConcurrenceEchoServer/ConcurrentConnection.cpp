@@ -29,7 +29,7 @@ void ConcurrentConnection::recvCompleteCallback(int retRecvStat, const vector<ch
 {
   if (retRecvStat == RECVERR)
   {
-    LOG(ERROR) << "recv error! wait to lose this client, fd " << spStream_->getFd();
+   // LOG(ERROR) << "recv error! wait to lose this client, fd " << spStream_->getFd();
     _destroy();
     return;
   }
@@ -70,7 +70,7 @@ void ConcurrentConnection::sendCompleteCallback(int retSendStat)
 {
   if (retSendStat == SENDERR)
   {
-    LOG(ERROR) << "send error! data: " << string(recvBuf_.begin(), recvBuf_.end());
+   // LOG(ERROR) << "send error! data: " << string(recvBuf_.begin(), recvBuf_.end());
     _destroy();
     return;
   }
