@@ -9,9 +9,9 @@
 #include "ConcurrenceEchoServer.h"
 #include "ConcurrentConnection.h"
 
-#define REACTOR_NUM 4 //和CPU数目一致
+#define REACTOR_NUM 2 //其余两个核供模拟客户端服务使用
 #define THREAD_POOL_NUM 0 //不要线程池
-#define LISTEN_PORT 12306 //随意，不需要
+#define LISTEN_PORT 12306
 
 ConcurrenceEchoServer::ConcurrenceEchoServer(int netWorkServiceNum, unsigned short listenPort, int threadPoolNum)
     : TcpServer(netWorkServiceNum, listenPort, threadPoolNum)

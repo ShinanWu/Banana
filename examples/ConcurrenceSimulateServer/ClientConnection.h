@@ -6,13 +6,19 @@
 #define SERVICEFRAMEWORK_CLIENTCONNECTION_H
 #include <network/Connection.h>
 #include <memory>
+#include <network/NetWorkService.h>
 
 class ConcurrenceSimulateServer;
 class ClientConnection : public Connection, public enable_shared_from_this<ClientConnection>
 {
-  enum {RECV_HEAD, RECV_BODY, SEND_HEAD, SENDBODY};
+  enum
+  {
+    RECV_HEAD, RECV_BODY, SEND_HEAD, SENDBODY
+  };
 public:
-  ClientConnection(const SpStream &spStream, ConcurrenceSimulateServer &simulateServer);
+  ClientConnection(const SpStream &spStream,
+                   const WpNetWorkService &wpNetWorkService,
+                   ConcurrenceSimulateServer &simulateServer);
 public:
   virtual void startReadOrWriteInService();
 
@@ -23,13 +29,14 @@ private:
 
 private:
   int stat_ = RECV_HEAD;
-  stringstream ss_ ;
+  stringstream ss_;
   int selfEchoCount_ = 0;
   vector<char> sendBuf_;
   vector<char> recvBuf_;
   RecvCompleteCallback recvCompleteCallback_;
   SendCompleteCallback sendCompleteCallback_;
   ConcurrenceSimulateServer &simulateServer_;
+
 };
 
 #endif //SERVICEFRAMEWORK_CLIENTCONNECTION_H

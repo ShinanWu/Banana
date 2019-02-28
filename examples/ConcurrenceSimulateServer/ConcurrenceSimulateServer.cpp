@@ -1,14 +1,19 @@
 //
 // Created by Shinan on 2019/2/23.
 // 模拟客户端请求，和ConcurrenceEchoServer配合做并发测试
-// 注意设置最大文件句柄数,先启动echo server,再启动simulate server
+// 注意设置最大文件句柄数(100000),
+// 注意增大可用端口范围 -- 修改/etc/sysctl.conf，增加一行：net.ipv4.ip_local_port_range= 1024 65535
+// 这样可以测试5W多并发
+// 先启动echo server,再启动simulate server,
+// 假设4个核，每个服务占用两个，粗略并发量x2
+
 //测试并发连接数
 
 //并发客户端数目
-#define CLIENT_NUM  20000
+#define CLIENT_NUM  40000
 
 //每个客户端发的消息数目
-#define MSG_NUM_EACH_CLIENT  5
+#define MSG_NUM_EACH_CLIENT  20
 
 #include <logging.h>
 #include <sys/stat.h>
@@ -22,9 +27,12 @@
 #include <network/Stream.h>
 #include "ClientConnection.h"
 #include "ConcurrenceSimulateServer.h"
+#include <network/NewConnectMessage.h>
+#include <chrono>
 
-#define REACTOR_NUM 0 //只用accept线程
-#define THREAD_POOL_NUM 0 //不要线程池
+
+#define REACTOR_NUM 2 //模拟客户端用两个线程，占用2个核，服务端用其余两个核
+#define THREAD_POOL_NUM 0 //不用线程池
 #define LISTEN_PORT 1935 //随意，不需要
 
 
@@ -43,17 +51,40 @@ void ConcurrenceSimulateServer::_creatConnections(int num)
   }
 }
 
+//异步connect建立起连接的每个fd
 void ConcurrenceSimulateServer::onConnected(int fd)
 {
   if (fd <= 0) return;
-  auto spStream = make_shared<Stream>(fd, getSpNetAcceptService()->getSpEventReactor());
-  auto spClientConnection = make_shared<ClientConnection>(spStream, *this);
-  connectionMap_.emplace(std::make_pair(spClientConnection->getHandle(), spClientConnection));
-  spClientConnection->startReadOrWriteInService();
+
+  //计算所有连接建立成功的时间
+  if (bConnectedFirstCount_)
+  {
+    bConnectedFirstCount_ = false;
+    connectedCountStartTime_ = std::chrono::system_clock::now();
+    LOG(ERROR) << " first client connected! fd: " << fd;
+  }
+  if (++connectedCount_ == clientNum_)
+  {
+    connectedCountEndTime_ = std::chrono::system_clock::now();
+    long long duration = std::chrono::duration_cast<std::chrono::milliseconds>(
+        connectedCountEndTime_ - connectedCountStartTime_).count();
+    LOG(ERROR) << " all " << clientNum_ << " clients connected! duration:"
+               << duration << " ms";
+    google::FlushLogFiles(google::INFO);
+  }
+  getSpNetAcceptService()->__onAccept(fd);
+
 }
 
+//每个NetWorkService连接来的回调函数
 void ConcurrenceSimulateServer::onConnection(const SpStream &spStream, const WpNetWorkService &wpNetWorkService)
-{}
+{
+  auto spClientConnection = make_shared<ClientConnection>(spStream, wpNetWorkService, *this);
+  auto spNetworkService = wpNetWorkService.lock();
+  assert(spNetworkService);
+  spNetworkService->addNewConnection(spClientConnection);
+  spClientConnection->startReadOrWriteInService();
+}
 //开始前需要执行的函数
 void ConcurrenceSimulateServer::onLoop()
 {

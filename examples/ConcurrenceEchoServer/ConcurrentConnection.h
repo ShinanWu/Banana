@@ -11,7 +11,6 @@ class ConcurrentConnection : public Connection, public enable_shared_from_this<C
 {
   enum {RECV_HEAD, RECV_BODY};
 public:
-  explicit ConcurrentConnection(const SpStream &spStream);
   ConcurrentConnection(const SpStream &spStream, const WpNetWorkService &wpNetWorkService);
   virtual void startReadOrWriteInService() final;
 
