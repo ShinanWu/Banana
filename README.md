@@ -98,7 +98,7 @@ test finished!
 ./ConcurrenceSimulateServer
 ```
 #### result like below
-simulate 40000 clients and each perform 20 echo message
+- simulate 40000 clients and each perform 20 echo message
 ```
 first client connected! fd: 19
 all 40000 clients connected! duration:208 ms
