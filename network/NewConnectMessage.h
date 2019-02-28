@@ -10,7 +10,7 @@
 class NewConnectMessage : public Message
 {
 public:
-  NewConnectMessage(int clientFd = -1) : Message("NEW_CONNECT"), clientFd_(clientFd)
+  explicit NewConnectMessage(int clientFd = -1) : Message("NEW_CONNECT"), clientFd_(clientFd)
   {}
 
   virtual ~NewConnectMessage()

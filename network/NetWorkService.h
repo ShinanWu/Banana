@@ -38,7 +38,7 @@ private:
   void onNewConMsg(int fd, short event);
 
 private:
-  NewConMsgWaitFreeBuf newConMsgBuf_{500};
+  NewConMsgWaitFreeBuf newConMsgBuf_{50000};
   int acceptEventFd_{-1};
   ConnectionCallback newConnectionCb_;
   EventReactor::EventCallback onNewConMsgCall_;

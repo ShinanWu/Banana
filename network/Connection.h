@@ -17,7 +17,6 @@ typedef shared_ptr<NetWorkService> SpNetWorkService;
 class Connection
 {
 public:
-  explicit Connection(const SpStream &spStream);
   Connection(const SpStream &spStream, const WpNetWorkService &wpNetWorkService);
   virtual ~Connection();
 

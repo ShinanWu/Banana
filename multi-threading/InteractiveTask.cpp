@@ -10,7 +10,7 @@
 #include "MessageCenter.h"
 
 #define NORMAL_THREAD_NAME "availible"
-#define MAX_CLIENT_NUM 100000
+#define MAX_CLIENT_NUM 60000
 
 using namespace std::placeholders;
 

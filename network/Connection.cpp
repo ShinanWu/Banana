@@ -15,13 +15,6 @@ Connection::Connection(const SpStream &spStream, const WpNetWorkService &wpNetWo
   assert(handle_ > 0);
 }
 
-Connection::Connection(const SpStream &spStream)
-    : spStream_(spStream)
-{
-  handle_ = spStream->getFd();
-  assert(handle_ > 0);
-}
-
 Connection::~Connection()
 {
  // LOG(ERROR) << "~Connection";

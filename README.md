@@ -50,6 +50,7 @@ int main()
 ```
 
 ## Examples
+### for parallel-calculating
 there is also a "map-reduce"-like example to show several clients concurrently perform parallel-calculating task
 #### build
 - please clone glog and libevent repo and build ahead according to CMakeLists.txt
@@ -77,4 +78,32 @@ serial-calculate on local result: the max num is 2147483632 duration 14837 ms
 parallel-calculate from server result: the max num is 2147483632 duration 4903 ms
 
 test finished!
+```
+### for high concurrence
+#### build
+- please clone glog and libevent repo and build ahead according to CMakeLists.txt
+- don't forget modify port range ahead, echo >> "net.ipv4.ip_local_port_range= 1024 65535" /etc/sysctl.conf
+- below test is on a laptop, if available, please test with a physical server machine
+```
+- cd Banana/cmake
+- mkdir build; cd build
+- cmake ..; make
+```
+#### run
+```
+./ConcurrenceEchoServer
+```
+#### run test
+```
+./ConcurrenceSimulateServer
+```
+#### result like below
+simulate 40000 clients and each perform 20 echo message
+```
+first client connected! fd: 19
+all 40000 clients connected! duration:208 ms
+............................................
+10000 echo msg received! msg : client fd:39152 echo hello!
+............................................
+all 800000 echo received! duration:53803 ms
 ```

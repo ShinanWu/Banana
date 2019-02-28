@@ -56,6 +56,8 @@ void NetAcceptService::__onAccept(int fd)
   //Round-Robin向每个worker发送
   auto spMessage = std::make_shared<NewConnectMessage>(fd);
   vecSpWorkService_[_nextServiceIndex()]->notifyMsg(spMessage);
+//  NewConnectMessage newConnectMessage(fd);
+//  vecSpWorkService_[_nextServiceIndex()]->notifyNewConnnectMsg(newConnectMessage);
 //  LOG(INFO) << "one client connected! fd: " << fd;
 }
 

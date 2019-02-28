@@ -20,6 +20,7 @@ private:
   void onStart() final ;
   void onStop() final ;
   void onMessage(const shared_ptr<Message> &spMessage) final ;
+public:
   void __onAccept(int fd);
 
 public:

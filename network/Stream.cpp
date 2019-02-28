@@ -31,7 +31,9 @@ Stream::~Stream()
 {
   if (fd_ > 0)
   {
-    spEventReactor_->removeEventHandler(fd_, EventReactor::EVENT_READ | EventReactor::EVENT_WRITE);
+    spEventReactor_->removeEventHandler(fd_, EventReactor::EVENT_READ);
+    spEventReactor_->removeEventHandler(fd_, EventReactor::EVENT_WRITE);
+
     close(fd_);
     fd_ = -1;
   }
@@ -63,7 +65,7 @@ void Stream::_recvOnePack(int fd, short event)
     }
     else
     {
-    //  LOG(ERROR) << "unexpected recv error! shout down recv," << " errno: " << errno;
+      LOG(ERROR) << "unexpected recv error! shout down recv," << " errno: " << errno;
       if (closeCallback_)
       { closeCallback_(fd_); }
       //close fd，析构的时候再close,和stream生命周期保持一致
@@ -106,7 +108,7 @@ void Stream::_sendOnePack(int fd, short event)
     }
     else
     {
-    //  LOG(ERROR) << "unexpected send error! shout down send:" << fd_ << ", errno: " << errno;
+      LOG(ERROR) << "unexpected send error! shout down send:" << fd_ << ", errno: " << errno;
       sendStat_ = SENDERR;
       sendCompleteCallback_(sendStat_);
       return;
